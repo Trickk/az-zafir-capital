@@ -1,0 +1,1320 @@
+/* ======================================================
+AL-ZAFIR CAPITAL
+Corporate Style System
+Black / Gold Luxury Investment Theme
+====================================================== */
+
+:root{
+
+    --az-black:#050505;
+    --az-panel:#0d0d0d;
+    --az-panel-soft:#111111;
+
+    --az-gold:#d4af37;
+    --az-gold-light:#f1d27a;
+    --az-gold-soft:rgba(212,175,55,0.25);
+
+    --az-text:#f5f1e8;
+    --az-muted:#b8b1a3;
+
+    --az-line:rgba(212,175,55,0.16);
+
+    --az-node: #fff4d6;        /* punto principal */
+    --az-node-glow: #ffe6a3;   /* brillo */
+    --az-line: rgba(255,255,255,0.35); /* líneas */
+    --az-line-glow: rgba(255,230,150,0.45);
+    --az-label-bg: rgba(0,0,0,0.78);
+    --az-label-border: rgba(255,255,255,0.15);
+}
+
+/* ======================================================
+BASE
+====================================================== */
+
+html,
+body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+    background:var(--az-black);
+    color:var(--az-text);
+}
+
+body{
+    font-family:'Inter',sans-serif;
+}
+
+/* ======================================================
+LAYOUT
+====================================================== */
+
+.az-bg-main{
+    background:var(--az-black);
+}
+
+.az-container{
+    width:100%;
+    max-width:1280px;
+    margin:0 auto;
+    padding-left:24px;
+    padding-right:24px;
+    box-sizing:border-box;
+}
+
+/* ======================================================
+TYPOGRAPHY
+====================================================== */
+
+.az-title{
+    font-family:'Cormorant Garamond',serif;
+    color:var(--az-text);
+}
+
+.az-eyebrow{
+
+    color:var(--az-gold);
+
+    text-transform:uppercase;
+
+    letter-spacing:0.35em;
+
+    font-size:0.75rem;
+
+    font-weight:600;
+
+}
+
+.az-muted{
+    color:var(--az-muted);
+}
+
+.az-gold{
+    color:var(--az-gold);
+}
+
+/* ======================================================
+NAVIGATION
+====================================================== */
+
+.az-border{
+    border-bottom:1px solid var(--az-line);
+}
+
+.az-nav-link{
+
+    color:var(--az-muted);
+
+    text-transform:uppercase;
+
+    letter-spacing:0.18em;
+
+    font-size:0.82rem;
+
+    transition:color .2s ease;
+
+    text-decoration:none;
+
+}
+
+.az-nav-link:hover{
+    color:var(--az-gold);
+}
+
+.az-nav-link.active{
+    color:var(--az-gold);
+}
+
+/* ======================================================
+HERO
+====================================================== */
+
+.az-hero{
+
+    width:100%;
+
+    /* background:
+        radial-gradient(circle at top, rgba(212,175,55,0.12), transparent 42%),
+        linear-gradient(to bottom, rgba(255,255,255,0.02), transparent 30%, rgba(0,0,0,0.25)),
+        var(--az-black); */
+
+}
+
+/* ======================================================
+SECTIONS
+====================================================== */
+
+.az-section{
+
+    padding-top:2rem;
+
+    padding-bottom:6rem;
+
+}
+
+/* ======================================================
+CARDS
+====================================================== */
+
+.az-card{
+
+    background:var(--az-panel);
+
+    border:1px solid var(--az-line);
+
+    border-radius:16px;
+
+    transition:all .25s ease;
+
+}
+
+.az-card:hover{
+
+    border-color:var(--az-gold-soft);
+
+    transform:translateY(-3px);
+
+}
+
+/* ======================================================
+BUTTONS
+====================================================== */
+
+.az-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:14px;
+
+    padding:0.85rem 1.4rem;
+
+    font-weight:600;
+
+    text-decoration:none;
+
+    transition:.2s ease;
+
+}
+
+.az-btn-primary{
+
+    background:var(--az-gold);
+
+    color:#000;
+
+    border:1px solid var(--az-gold);
+
+}
+
+.az-btn-primary:hover{
+
+    background:var(--az-gold-light);
+
+    border-color:var(--az-gold-light);
+
+}
+
+.az-btn-secondary{
+
+    background:transparent;
+
+    color:var(--az-text);
+
+    border:1px solid rgba(212,175,55,0.35);
+
+}
+
+.az-btn-secondary:hover{
+
+    background:rgba(212,175,55,0.08);
+
+}
+
+/* ======================================================
+INPUTS
+====================================================== */
+
+.az-input{
+
+    width:100%;
+
+    background:#0c0c0c;
+
+    border:1px solid rgba(212,175,55,0.2);
+
+    border-radius:12px;
+
+    padding:12px 14px;
+
+    color:#f5f1e8;
+
+}
+
+.az-input:focus{
+
+    outline:none;
+
+    border-color:#d4af37;
+
+    box-shadow:0 0 0 3px rgba(212,175,55,0.1);
+
+}
+
+/* ======================================================
+FOOTER
+====================================================== */
+
+footer{
+
+    border-top:1px solid var(--az-line);
+
+}
+
+/* ======================================================
+LOGO EFFECT
+====================================================== */
+
+.az-logo-glow{
+
+    filter:drop-shadow(0 0 16px rgba(212,175,55,0.12));
+
+}
+
+/* ======================================================
+SCROLLBAR
+====================================================== */
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#080808;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--az-gold-soft);
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--az-gold);
+
+}
+
+/* ======================================================
+PREMIUM HERO
+====================================================== */
+
+.az-hero-premium{
+    position:relative;
+    isolation:isolate;
+    /* background:
+        radial-gradient(circle at 50% 0%, rgba(212,175,55,0.12), transparent 26%),
+        radial-gradient(circle at 0% 100%, rgba(212,175,55,0.05), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%, rgba(0,0,0,0.28)),
+        var(--az-black); */
+}
+
+.az-hero-pattern{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:.12;
+    background-image:
+        linear-gradient(30deg, rgba(212,175,55,0.08) 12%, transparent 12.5%, transparent 87%, rgba(212,175,55,0.08) 87.5%, rgba(212,175,55,0.08)),
+        linear-gradient(150deg, rgba(212,175,55,0.08) 12%, transparent 12.5%, transparent 87%, rgba(212,175,55,0.08) 87.5%, rgba(212,175,55,0.08)),
+        linear-gradient(90deg, rgba(212,175,55,0.05) 2%, transparent 2.5%, transparent 97%, rgba(212,175,55,0.05) 97.5%, rgba(212,175,55,0.05));
+    background-size:120px 120px,120px 120px,120px 120px;
+    background-position:0 0,0 0,0 0;
+    mask-image:linear-gradient(to bottom, rgba(0,0,0,0.8), transparent 80%);
+}
+
+.az-hero-glow{
+    position:absolute;
+    top:50%;
+    right:10%;
+    width:520px;
+    height:520px;
+    border-radius:999px;
+    transform:translateY(-50%);
+    background:radial-gradient(circle, rgba(212,175,55,0.18), rgba(212,175,55,0.05) 35%, transparent 70%);
+    filter:blur(20px);
+    pointer-events:none;
+}
+
+.az-hero-particles{
+
+    position:absolute;
+    inset:0;
+
+    z-index:3;
+
+    pointer-events:none;
+
+}
+
+.az-hero-particles span{
+    position:absolute;
+    display:block;
+    width:4px;
+    height:4px;
+    border-radius:999px;
+    background:rgba(241,210,122,0.9);
+    box-shadow:0 0 12px rgba(212,175,55,0.45);
+    animation:azFloat 10s linear infinite;
+    opacity:.6;
+}
+
+.az-hero-particles span:nth-child(1){
+    left:12%;
+    top:80%;
+    animation-duration:13s;
+    animation-delay:0s;
+}
+
+.az-hero-particles span:nth-child(2){
+    left:28%;
+    top:92%;
+    animation-duration:11s;
+    animation-delay:1.2s;
+}
+
+.az-hero-particles span:nth-child(3){
+    left:46%;
+    top:86%;
+    animation-duration:14s;
+    animation-delay:2s;
+}
+
+.az-hero-particles span:nth-child(4){
+    left:66%;
+    top:90%;
+    animation-duration:12s;
+    animation-delay:1s;
+}
+
+.az-hero-particles span:nth-child(5){
+    left:78%;
+    top:84%;
+    animation-duration:10s;
+    animation-delay:2.8s;
+}
+
+.az-hero-particles span:nth-child(6){
+    left:88%;
+    top:95%;
+    animation-duration:15s;
+    animation-delay:1.5s;
+}
+
+@keyframes azFloat{
+    0%{
+        transform:translateY(0) scale(1);
+        opacity:0;
+    }
+    10%{
+        opacity:.55;
+    }
+    70%{
+        opacity:.4;
+    }
+    100%{
+        transform:translateY(-780px) scale(1.4);
+        opacity:0;
+    }
+}
+
+/* ======================================================
+HERO EMBLEM
+====================================================== */
+
+.az-hero-emblem-wrap{
+    position:relative;
+    width:420px;
+    height:420px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.az-hero-emblem{
+    position:relative;
+    z-index:3;
+    width:290px;
+    height:auto;
+    filter:drop-shadow(0 0 24px rgba(212,175,55,0.14));
+    animation:azEmblemPulse 5s ease-in-out infinite;
+}
+
+.az-hero-emblem-ring{
+    position:absolute;
+    width:360px;
+    height:360px;
+    border-radius:999px;
+    border:1px solid rgba(212,175,55,0.18);
+    box-shadow:0 0 40px rgba(212,175,55,0.06) inset;
+    animation:azRotateSlow 26s linear infinite;
+}
+
+.az-hero-emblem-ring-2{
+    width:430px;
+    height:430px;
+    border-color:rgba(212,175,55,0.10);
+    animation-direction:reverse;
+    animation-duration:34s;
+}
+
+@keyframes azRotateSlow{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
+}
+
+@keyframes azEmblemPulse{
+    0%,100%{
+        transform:scale(1);
+    }
+    50%{
+        transform:scale(1.02);
+    }
+}
+
+/* ======================================================
+STAT CARDS
+====================================================== */
+
+.az-stat-card{
+    background:linear-gradient(180deg, rgba(17,17,17,0.95), rgba(10,10,10,0.95));
+    border:1px solid rgba(212,175,55,0.14);
+    border-radius:16px;
+    padding:1.1rem 1.2rem;
+    backdrop-filter:blur(4px);
+}
+
+.az-stat-number{
+    color:var(--az-gold);
+    font-family:'Cormorant Garamond',serif;
+    font-size:2rem;
+    font-weight:700;
+    line-height:1;
+}
+
+.az-stat-label{
+    margin-top:.45rem;
+    color:var(--az-muted);
+    font-size:.85rem;
+    text-transform:uppercase;
+    letter-spacing:.16em;
+}
+
+/* ======================================================
+CTA CARD
+====================================================== */
+
+.az-cta-card{
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.10), transparent 26%),
+        linear-gradient(180deg, rgba(17,17,17,0.98), rgba(10,10,10,0.98));
+}
+
+.az-cta-card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(120deg, transparent 0%, rgba(212,175,55,0.03) 40%, transparent 75%);
+}
+
+/* ======================================================
+RESPONSIVE TWEAKS
+====================================================== */
+
+@media (max-width: 1024px){
+    .az-hero-glow{
+        right:50%;
+        transform:translate(50%, -50%);
+        width:420px;
+        height:420px;
+    }
+}
+
+/* SKYLINE BACKGROUND */
+
+.az-skyline{
+
+    position:fixed;
+    bottom:0;
+    left:0;
+
+    width:100%;
+    height:420px;
+
+    background-image:url('/images/skyline.svg');
+    background-repeat:no-repeat;
+    background-position:bottom center;
+    background-size:cover;
+
+    opacity:.08;
+
+    pointer-events:none;
+
+    z-index:2;
+
+}
+
+/* difumina hacia arriba */
+
+.az-skyline::after{
+
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:linear-gradient(
+        to top,
+        rgba(0,0,0,0.8),
+        transparent 60%
+    );
+
+}
+
+/* ======================================================
+LUXURY SKYLINE
+====================================================== */
+
+.az-skyline {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 460px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.14;
+    background-image: url('/images/skyline-luxury.svg');
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: cover;
+    mask-image: linear-gradient(to top, rgba(0,0,0,1) 35%, rgba(0,0,0,0.65) 65%, transparent 100%);
+}
+
+.az-skyline::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(to top, rgba(212,175,55,0.08), transparent 42%),
+        radial-gradient(circle at 50% 100%, rgba(212,175,55,0.10), transparent 50%);
+}
+
+.az-skyline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 180px;
+    background: linear-gradient(to top, rgba(5,5,5,0.95), transparent);
+}
+
+/* partículas por encima del skyline */
+.az-hero-particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* contenido siempre por encima */
+.az-layer-content {
+    position: relative;
+    z-index: 10;
+}
+
+/* luces suaves del skyline */
+.az-skyline-glow {
+    position: fixed;
+    left: 50%;
+    bottom: -60px;
+    width: 1200px;
+    height: 320px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(circle, rgba(212,175,55,0.08), transparent 68%);
+    filter: blur(28px);
+}
+
+/* variante responsive */
+@media (max-width: 1024px) {
+    .az-skyline {
+        height: 320px;
+        opacity: 0.10;
+    }
+
+    .az-skyline-glow {
+        width: 760px;
+        height: 220px;
+    }
+}
+
+/* ======================================================
+WORLD MAP SECTION
+====================================================== */
+
+.az-map-card {
+    background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.08), transparent 22%),
+        linear-gradient(180deg, rgba(17,17,17,0.98), rgba(10,10,10,0.98));
+    border: 1px solid var(--az-line);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.az-world-map {
+    position: relative;
+    width: 100%;
+    min-height: 460px;
+    background:
+        linear-gradient(to bottom, rgba(255,255,255,0.015), transparent 30%),
+        url('/images/world-map-gold.png') center center / contain no-repeat;
+}
+
+.az-world-map::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at center, rgba(212,175,55,0.05), transparent 55%);
+    pointer-events: none;
+}
+
+.az-world-map::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.18) 100%);
+}
+
+.az-map-point {
+    position: absolute;
+    z-index: 2;
+}
+
+.az-map-point span{
+
+    position:absolute;
+
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background: var(--az-node);
+
+    box-shadow:
+        0 0 0 6px rgba(255,230,150,0.08),
+        0 0 14px var(--az-node-glow);
+
+    transform: translate(-50%, -50%);
+
+    animation: azPulsePoint 2.6s ease-in-out infinite;
+
+}
+
+.az-map-point small{
+
+    position:absolute;
+
+    color:#fff4d6;
+
+    font-size:11px;
+
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+
+    background:var(--az-label-bg);
+
+    border:1px solid var(--az-label-border);
+
+    padding:5px 10px;
+
+    border-radius:999px;
+
+    white-space:nowrap;
+
+}
+
+/* POSICIONES DEL PUNTO */
+.az-map-point.is-los-santos { left: 17.5%; top: 31.5%; }
+.az-map-point.is-london     { left: 47.7%; top: 18.5%; }
+.az-map-point.is-monaco     { left: 49.2%; top: 25.5%; }
+.az-map-point.is-abu-dhabi  { left: 61.7%; top: 38.5%; }
+.az-map-point.is-singapore  { left: 75.2%; top: 55.7%; }
+
+/* POSICIÓN DEL CÍRCULO */
+.az-map-point.is-los-santos span,
+.az-map-point.is-london span,
+.az-map-point.is-monaco span,
+.az-map-point.is-abu-dhabi span,
+.az-map-point.is-singapore span {
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+}
+
+/* POSICIÓN DE CADA ETIQUETA */
+.az-map-point.is-los-santos small {
+    left: -6px;
+    top: 18px;
+    transform: translateX(-50%);
+}
+
+.az-map-point.is-london small {
+    left: 18px;
+    top: -2px;
+}
+
+.az-map-point.is-monaco small {
+    left: 16px;
+    top: 14px;
+}
+
+.az-map-point.is-abu-dhabi small {
+    left: 18px;
+    top: 14px;
+}
+
+.az-map-point.is-singapore small {
+    left: 18px;
+    top: 18px;
+}
+
+@keyframes azPulsePoint{
+
+    0%,100%{
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow:
+            0 0 0 6px rgba(255,230,150,0.08),
+            0 0 14px var(--az-node-glow);
+    }
+
+    50%{
+        transform: translate(-50%, -50%) scale(1.15);
+        box-shadow:
+            0 0 0 10px rgba(255,230,150,0.05),
+            0 0 20px var(--az-node-glow);
+    }
+
+}
+
+@media (max-width: 768px) {
+    .az-world-map {
+        min-height: 320px;
+        background-size: contain;
+    }
+
+    .az-map-point small {
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+}
+
+/* ========================================
+MAP CONNECTION LINES
+======================================== */
+
+.az-map-lines {
+
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+
+    pointer-events:none;
+
+}
+
+.az-map-lines line{
+
+    stroke: rgba(255,245,210,0.55);   /* champagne claro */
+
+    stroke-width: 0.35;
+
+    stroke-dasharray: 4 6;
+
+    filter: drop-shadow(0 0 4px rgba(212,175,55,0.45));
+
+    animation: azLineMove 8s linear infinite;
+
+}
+
+/* glow */
+
+.az-map-lines line::before{
+    filter: drop-shadow(0 0 6px rgba(212,175,55,0.5));
+}
+
+.az-main-route{
+
+    stroke: rgba(255,245,210,0.8);
+
+    stroke-width:0.45;
+
+    filter: drop-shadow(0 0 6px rgba(212,175,55,0.7));
+
+}
+
+@keyframes azLineMove{
+
+    from{
+        stroke-dashoffset:0;
+    }
+
+    to{
+        stroke-dashoffset:-40;
+    }
+
+}
+
+
+.az-admin-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: var(--az-muted);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: 0.2s ease;
+}
+
+.az-admin-link:hover {
+    background: rgba(212,175,55,0.06);
+    border-color: rgba(212,175,55,0.14);
+    color: var(--az-gold-light);
+}
+
+.az-admin-link.active {
+    background: rgba(212,175,55,0.08);
+    border-color: rgba(212,175,55,0.22);
+    color: var(--az-gold-light);
+}
+
+.az-kpi-card {
+    background: linear-gradient(180deg, rgba(17,17,17,0.98), rgba(10,10,10,0.98));
+    border: 1px solid var(--az-line);
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.az-kpi-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--az-muted);
+}
+
+.az-kpi-value {
+    margin-top: 10px;
+    font-size: 38px;
+    line-height: 1;
+    color: var(--az-gold);
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+
+/* ======================================================
+FLUX / AUTH OVERRIDES
+====================================================== */
+
+[data-flux-field],
+[data-flux-input],
+[data-flux-control],
+.flux-field input,
+.flux-field textarea,
+.flux-field select {
+    background: #0c0c0c !important;
+    color: var(--az-text) !important;
+    border-color: rgba(212,175,55,0.18) !important;
+    border-radius: 14px !important;
+}
+
+.flux-field input::placeholder,
+.flux-field textarea::placeholder {
+    color: var(--az-muted) !important;
+}
+
+.flux-field input:focus,
+.flux-field textarea:focus,
+.flux-field select:focus {
+    border-color: var(--az-gold) !important;
+    box-shadow: 0 0 0 4px rgba(212,175,55,0.08) !important;
+}
+
+[data-flux-label],
+.flux-label {
+    color: var(--az-gold) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+}
+
+[data-flux-checkbox],
+.flux-checkbox {
+    accent-color: var(--az-gold);
+}
+
+.flux-link {
+    transition: color .2s ease;
+}
+
+/* =========================================
+AL ZAFIR TABLE
+========================================= */
+
+.az-table-container{
+    border:1px solid var(--az-line);
+    border-radius:18px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#0d0d0d,#090909);
+}
+
+/* tabla base */
+
+.az-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+}
+
+/* header */
+
+.az-table thead{
+    background:rgba(212,175,55,0.06);
+}
+
+.az-table th{
+    text-align:left;
+    padding:16px 18px;
+
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+
+    color:var(--az-gold);
+    font-weight:600;
+
+    border-bottom:1px solid var(--az-line);
+}
+
+/* filas */
+
+.az-table td{
+    padding:18px;
+
+    color:var(--az-text);
+    border-bottom:1px solid rgba(255,255,255,0.04);
+}
+
+/* zebra */
+
+.az-table tbody tr:nth-child(even){
+    background:rgba(255,255,255,0.01);
+}
+
+/* hover */
+
+.az-table tbody tr:hover{
+    background:rgba(212,175,55,0.05);
+}
+
+/* nombre principal */
+
+.az-table-primary{
+    font-weight:600;
+    color:var(--az-gold-light);
+}
+
+/* subtitulo */
+
+.az-table-sub{
+    font-size:12px;
+    color:var(--az-muted);
+    margin-top:3px;
+}
+
+/* acciones */
+
+.az-table-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+}
+
+/* botón pequeño */
+
+.az-btn-sm{
+    padding:6px 12px;
+    font-size:12px;
+    border-radius:8px;
+}
+
+/* badge estado */
+
+.az-status{
+    display:inline-flex;
+    align-items:center;
+    padding:4px 10px;
+
+    font-size:11px;
+    border-radius:999px;
+
+    border:1px solid rgba(212,175,55,0.25);
+    background:rgba(212,175,55,0.08);
+
+    color:var(--az-gold-light);
+}
+
+/* ======================================================
+ADMIN PANEL
+====================================================== */
+
+.az-admin-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: var(--az-muted);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: 0.2s ease;
+}
+
+.az-admin-link:hover {
+    background: rgba(212,175,55,0.06);
+    border-color: rgba(212,175,55,0.14);
+    color: var(--az-gold-light);
+}
+
+.az-admin-link.active {
+    background: rgba(212,175,55,0.08);
+    border-color: rgba(212,175,55,0.22);
+    color: var(--az-gold-light);
+}
+
+.az-kpi-card {
+    background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.08), transparent 35%),
+        linear-gradient(180deg, rgba(17,17,17,0.98), rgba(10,10,10,0.98));
+    border: 1px solid var(--az-line);
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.az-kpi-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--az-muted);
+}
+
+.az-kpi-value {
+    margin-top: 10px;
+    font-size: 38px;
+    line-height: 1;
+    color: var(--az-gold);
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.az-admin-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--az-line);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--az-text);
+    background: rgba(255,255,255,0.01);
+    transition: 0.2s ease;
+}
+
+.az-admin-action:hover {
+    border-color: rgba(212,175,55,0.24);
+    background: rgba(212,175,55,0.05);
+    color: var(--az-gold-light);
+}
+
+.az-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.az-badge-gold {
+    background: rgba(212,175,55,0.12);
+    color: var(--az-gold-light);
+    border: 1px solid rgba(212,175,55,0.22);
+}
+
+/* =========================================
+DASHBOARD ACTION BAR
+========================================= */
+
+.az-dashboard-actions{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:10px;
+    padding:16px;
+    border:1px solid var(--az-line);
+
+    border-radius:16px;
+
+    background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.08), transparent 40%),
+        linear-gradient(180deg,#101010,#0b0b0b);
+
+}
+
+/* botones */
+
+.az-dashboard-action{
+
+    padding:10px 16px;
+
+    border-radius:10px;
+
+    font-size:10px;
+    letter-spacing:.06em;
+
+    text-transform:uppercase;
+
+    border:1px solid rgba(212,175,55,0.20);
+
+    background:rgba(212,175,55,0.06);
+
+    color:var(--az-gold);
+
+    transition:all .18s ease;
+
+    text-decoration:none;
+
+}
+
+.az-dashboard-action:hover{
+
+    background:rgba(212,175,55,0.15);
+
+    border-color:rgba(212,175,55,0.35);
+
+    color:var(--az-gold-light);
+
+    transform:translateY(-1px);
+
+}
+
+/* TOP BAR */
+
+.az-dashboard-top{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+ margin-bottom:15px;
+flex-wrap:wrap;
+
+gap:14px;
+
+padding:16px;
+
+border:1px solid var(--az-line);
+border-radius:16px;
+
+background:
+radial-gradient(circle at top right, rgba(212,175,55,0.08), transparent 40%),
+linear-gradient(180deg,#101010,#0b0b0b);
+
+}
+
+.az-dashboard-status{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+/* FINANCE ROW */
+
+.az-finance-row{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+gap:16px;
+
+}
+
+.az-finance-item{
+
+padding:20px;
+
+border-radius:16px;
+
+border:1px solid var(--az-line);
+
+background:
+radial-gradient(circle at top right, rgba(212,175,55,0.05), transparent 40%),
+linear-gradient(180deg,#111,#0b0b0b);
+
+}
+
+.az-finance-label{
+
+font-size:11px;
+
+letter-spacing:.18em;
+
+text-transform:uppercase;
+
+color:var(--az-muted);
+
+}
+
+.az-finance-value{
+
+margin-top:8px;
+
+font-size:28px;
+
+font-family:Georgia,serif;
+
+color:var(--az-gold);
+
+}

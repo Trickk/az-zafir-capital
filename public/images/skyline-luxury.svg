@@ -1,0 +1,135 @@
+<svg viewBox="0 0 1920 460" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1920" height="460" fill="transparent"></rect>
+
+  <!-- skyline -->
+  <path d="
+    M0 460
+    L0 350
+    L70 350
+    L70 285
+    L120 285
+    L120 460
+
+    L210 460
+    L210 320
+    L255 320
+    L255 250
+    L300 250
+    L300 460
+
+    L390 460
+    L390 300
+    L430 300
+    L430 235
+    L470 235
+    L470 460
+
+    L560 460
+    L560 270
+    L595 270
+    L595 200
+    L625 200
+    L625 460
+
+    L710 460
+    L710 315
+    L760 315
+    L760 460
+
+    L840 460
+    L840 250
+    L875 250
+    L875 170
+    L900 170
+    L900 120
+    L912 120
+    L912 85
+    L920 85
+    L928 120
+    L940 120
+    L940 170
+    L965 170
+    L965 250
+    L1000 250
+    L1000 460
+
+    L1090 460
+    L1090 305
+    L1130 305
+    L1130 240
+    L1170 240
+    L1170 460
+
+    L1260 460
+    L1260 285
+    L1290 285
+    L1290 220
+    L1325 220
+    L1325 460
+
+    L1410 460
+    L1410 330
+    L1475 330
+    L1475 460
+
+    L1560 460
+    L1560 260
+    L1600 260
+    L1600 195
+    L1640 195
+    L1640 460
+
+    L1730 460
+    L1730 340
+    L1785 340
+    L1785 460
+
+    L1860 460
+    L1860 380
+    L1920 380
+    L1920 460
+    Z" fill="#ffffff"></path>
+
+  <!-- windows / lights -->
+  <g fill="#f1d27a" opacity="0.95">
+    <!-- tower 1 -->
+    <rect x="84" y="300" width="6" height="10" rx="1"></rect>
+    <rect x="98" y="300" width="6" height="10" rx="1"></rect>
+    <rect x="84" y="320" width="6" height="10" rx="1"></rect>
+
+    <!-- tower 2 -->
+    <rect x="226" y="335" width="6" height="10" rx="1"></rect>
+    <rect x="242" y="335" width="6" height="10" rx="1"></rect>
+    <rect x="226" y="355" width="6" height="10" rx="1"></rect>
+
+    <!-- tower 3 -->
+    <rect x="408" y="315" width="6" height="10" rx="1"></rect>
+    <rect x="424" y="315" width="6" height="10" rx="1"></rect>
+    <rect x="440" y="315" width="6" height="10" rx="1"></rect>
+
+    <!-- tower 4 -->
+    <rect x="575" y="285" width="6" height="10" rx="1"></rect>
+    <rect x="590" y="285" width="6" height="10" rx="1"></rect>
+    <rect x="575" y="305" width="6" height="10" rx="1"></rect>
+
+    <!-- central spire base -->
+    <rect x="874" y="270" width="6" height="10" rx="1"></rect>
+    <rect x="890" y="270" width="6" height="10" rx="1"></rect>
+    <rect x="906" y="270" width="6" height="10" rx="1"></rect>
+    <rect x="922" y="270" width="6" height="10" rx="1"></rect>
+    <rect x="938" y="270" width="6" height="10" rx="1"></rect>
+
+    <!-- tower 6 -->
+    <rect x="1106" y="320" width="6" height="10" rx="1"></rect>
+    <rect x="1122" y="320" width="6" height="10" rx="1"></rect>
+
+    <!-- tower 7 -->
+    <rect x="1274" y="300" width="6" height="10" rx="1"></rect>
+    <rect x="1290" y="300" width="6" height="10" rx="1"></rect>
+
+    <!-- tower 8 -->
+    <rect x="1576" y="275" width="6" height="10" rx="1"></rect>
+    <rect x="1592" y="275" width="6" height="10" rx="1"></rect>
+    <rect x="1608" y="275" width="6" height="10" rx="1"></rect>
+  </g>
+</svg>
