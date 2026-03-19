@@ -36,7 +36,7 @@
                     Bandas
                 </a>
 
-                <a href="{{ route('admin.holdings.index') }}" class="az-admin-link {{ request()->routeIs('admin.holdings.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.companies.index') }}" class="az-admin-link {{ request()->routeIs('admin.companies.*') ? 'active' : '' }}">
                     Empresas
                 </a>
 
@@ -44,11 +44,7 @@
                     Facturas
                 </a>
 
-                {{-- <a href="{{ route('admin.settlements.index') }}" class="az-admin-link {{ request()->routeIs('admin.settlements.*') ? 'active' : '' }}">
-                    Liquidaciones
-                </a> --}}
-
-                <a href="{{ route('admin.cash-rolls.index') }}" class="az-admin-link {{ request()->routeIs('admin.cash-rolls.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.cash-deliveries.index') }}" class="az-admin-link {{ request()->routeIs('admin.cash-deliveries.*') ? 'active' : '' }}">
                     Entregas de dinero
                 </a>
             </nav>

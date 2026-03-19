@@ -1,13 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\GangController;
 use App\Http\Controllers\Admin\HoldingController;
-use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\CashRollDeliveryController;
 use App\Http\Controllers\Admin\SettlementController;
 use App\Models\CashRollDelivery;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GangController;
+use App\Http\Controllers\Admin\CompanyController;
+use App\Http\Controllers\Admin\CashDeliveryController;
+use App\Http\Controllers\Admin\InvoiceController;
 
 Route::get('/', function () {
     return view('public.home');
@@ -39,12 +41,13 @@ Route::get('/contact', function () {
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::resource('companies', CompanyController::class)->except(['show']);
     Route::resource('gangs', GangController::class)->except(['show']);
-    Route::resource('holdings', HoldingController::class)->except(['show']);
+    Route::resource('cash-deliveries', CashDeliveryController::class)->except(['show']);
     Route::resource('invoices', InvoiceController::class)->except(['show']);
-    Route::resource('cash-rolls', CashRollDeliveryController::class)->except(['show']);
-    Route::resource('settlements', SettlementController::class)->except(['show']);
 
-    Route::view('/companies', 'admin.companies.index')->name('companies');
+    Route::get('invoices/{invoice}/preview', [InvoiceController::class, 'preview'])->name('invoices.preview');
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
+    Route::post('invoices/{invoice}/generate-pdf', [InvoiceController::class, 'generatePdf'])->name('invoices.generate-pdf');
 });
 require __DIR__.'/settings.php';

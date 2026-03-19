@@ -10,55 +10,63 @@ class Invoice extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'gang_id',
-        'holding_id',
-        'company_id',
         'invoice_number',
         'internal_reference',
+        'invoice_customer_name',
+        'invoice_state_id',
+
+        'gang_name_snapshot',
+
+        'company_name_snapshot',
+        'company_legal_name_snapshot',
+        'company_type_snapshot',
+        'company_country_snapshot',
+        'company_city_snapshot',
+        'company_address_snapshot',
+        'company_tax_id_snapshot',
+        'company_logo_path_snapshot',
+        'company_invoice_image_path_snapshot',
+
         'concept',
         'description',
+
         'gross_amount',
+        'settlement_percent',
+        'commission_percent',
+        'commission_amount',
+        'net_amount',
+
         'issued_at',
         'due_at',
+
         'status',
+
         'is_generated_image',
         'public_image_path',
         'pdf_path',
+
         'created_by',
         'approved_by',
         'approved_at',
         'paid_at',
+        'cancelled_at',
+
         'notes',
     ];
 
     protected $casts = [
         'gross_amount' => 'decimal:2',
+        'settlement_percent' => 'decimal:2',
+        'commission_percent' => 'decimal:2',
+        'commission_amount' => 'decimal:2',
+        'net_amount' => 'decimal:2',
         'issued_at' => 'date',
         'due_at' => 'date',
         'approved_at' => 'datetime',
         'paid_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'is_generated_image' => 'boolean',
     ];
-
-    public function gang()
-    {
-        return $this->belongsTo(Gang::class);
-    }
-
-    public function holding()
-    {
-        return $this->belongsTo(Holding::class);
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function settlement()
-    {
-        return $this->hasOne(Settlement::class);
-    }
 
     public function creator()
     {

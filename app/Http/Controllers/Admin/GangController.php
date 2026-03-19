@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGangRequest;
 use App\Http\Requests\UpdateGangRequest;
+use App\Models\Company;
 use App\Models\Gang;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
@@ -14,7 +15,7 @@ class GangController extends Controller
 {
     public function index(): View
     {
-        $gangs = Gang::query()
+        $gangs = Gang::with('company')
             ->latest()
             ->paginate(12);
 
@@ -23,16 +24,27 @@ class GangController extends Controller
 
     public function create(): View
     {
-        return view('admin.gangs.create');
+        $companies = Company::where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.gangs.create', compact('companies'));
     }
 
     public function store(StoreGangRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
-        $data['slug'] = Str::slug($data['name']);
-
-        Gang::create($data);
+        Gang::create([
+            'company_id' => $data['company_id'] ?? null,
+            'name' => $data['name'],
+            'slug' => Str::slug($data['name']),
+            'description' => $data['description'] ?? null,
+            'boss_name' => $data['boss_name'] ?? null,
+            'contact_discord' => $data['contact_discord'] ?? null,
+            'settlement_percent' => $data['settlement_percent'],
+            'status' => $data['status'],
+        ]);
 
         return redirect()
             ->route('admin.gangs.index')
@@ -41,16 +53,27 @@ class GangController extends Controller
 
     public function edit(Gang $gang): View
     {
-        return view('admin.gangs.edit', compact('gang'));
+        $companies = Company::where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.gangs.edit', compact('gang', 'companies'));
     }
 
     public function update(UpdateGangRequest $request, Gang $gang): RedirectResponse
     {
         $data = $request->validated();
 
-        $data['slug'] = Str::slug($data['name']);
-
-        $gang->update($data);
+        $gang->update([
+            'company_id' => $data['company_id'] ?? null,
+            'name' => $data['name'],
+            'slug' => Str::slug($data['name']),
+            'description' => $data['description'] ?? null,
+            'boss_name' => $data['boss_name'] ?? null,
+            'contact_discord' => $data['contact_discord'] ?? null,
+            'settlement_percent' => $data['settlement_percent'],
+            'status' => $data['status'],
+        ]);
 
         return redirect()
             ->route('admin.gangs.index')

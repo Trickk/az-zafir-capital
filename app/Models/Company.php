@@ -18,18 +18,20 @@ class Company extends Model
         'city',
         'address',
         'tax_id',
-        'is_internal',
+        'responsible_name',
         'description',
         'logo_path',
+        'invoice_image_path',
         'status',
     ];
 
-    protected $casts = [
-        'is_internal' => 'boolean',
-    ];
-
-    public function invoices()
+    public function gangs()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->hasMany(Gang::class);
+    }
+
+    public function cashDeliveries()
+    {
+        return $this->hasMany(CashDelivery::class);
     }
 }

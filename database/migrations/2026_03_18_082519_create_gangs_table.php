@@ -11,12 +11,19 @@ return new class extends Migration
         Schema::create('gangs', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('company_id')
+                ->nullable()
+                ->constrained('companies')
+                ->nullOnDelete();
+
             $table->string('name', 150)->unique();
             $table->string('slug', 160)->unique();
             $table->text('description')->nullable();
 
             $table->string('boss_name', 150)->nullable();
             $table->string('contact_discord', 150)->nullable();
+
+            $table->decimal('settlement_percent', 5, 2)->default(80.00);
 
             $table->decimal('dirty_balance', 15, 2)->default(0);
             $table->decimal('dirty_received_total', 15, 2)->default(0);
@@ -28,8 +35,9 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('status');
+            $table->index('company_id');
             $table->index('slug');
+            $table->index('status');
         });
     }
 

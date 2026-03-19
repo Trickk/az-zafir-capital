@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCashRollDeliveryRequest extends FormRequest
+class StoreCashDeliveryRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +15,6 @@ class UpdateCashRollDeliveryRequest extends FormRequest
     {
         return [
             'gang_id' => ['required', 'exists:gangs,id'],
-            'holding_id' => ['required', 'exists:holdings,id'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'status' => ['required', 'in:pending,received,verified,cancelled'],
             'delivered_by' => ['nullable', 'string', 'max:150'],
@@ -29,8 +28,8 @@ class UpdateCashRollDeliveryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'holding_id.required' => 'Debes seleccionar un holding.',
-            'holding_id.exists' => 'El holding seleccionado no existe.',
+            'gang_id.required' => 'Debes seleccionar una banda.',
+            'gang_id.exists' => 'La banda seleccionada no existe.',
             'amount.required' => 'Debes indicar el importe.',
             'amount.min' => 'El importe debe ser mayor que cero.',
             'status.required' => 'Debes seleccionar un estado.',

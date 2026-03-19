@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CashRollDelivery extends Model
+class CashDelivery extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
         'gang_id',
-        'holding_id',
+        'company_id',
         'delivery_number',
         'amount',
         'status',
@@ -34,9 +34,9 @@ class CashRollDelivery extends Model
         return $this->belongsTo(Gang::class);
     }
 
-    public function holding()
+    public function company()
     {
-        return $this->belongsTo(Holding::class);
+        return $this->belongsTo(Company::class);
     }
 
     public function creator()

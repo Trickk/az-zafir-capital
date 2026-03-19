@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('cash_roll_deliveries', function (Blueprint $table) {
+        Schema::create('cash_deliveries', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('gang_id')
@@ -16,22 +16,17 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
-            $table->foreignId('holding_id')
-                ->constrained('holdings')
+            $table->foreignId('company_id')
+                ->constrained('companies')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
 
             $table->string('delivery_number', 100)->unique();
 
             $table->decimal('amount', 15, 2);
-            $table->unsignedInteger('roll_count')->default(1);
 
-            $table->enum('status', [
-                'pending',
-                'received',
-                'verified',
-                'cancelled',
-            ])->default('received');
+            $table->enum('status', ['pending', 'received', 'verified', 'cancelled'])
+                ->default('received');
 
             $table->string('delivered_by', 150)->nullable();
             $table->string('received_by', 150)->nullable();
@@ -47,14 +42,13 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('gang_id');
-            $table->index('holding_id');
+            $table->index('company_id');
             $table->index('status');
-            $table->index('delivered_at');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('cash_roll_deliveries');
+        Schema::dropIfExists('cash_deliveries');
     }
 };

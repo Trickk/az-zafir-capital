@@ -10,11 +10,13 @@ class Gang extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'company_id',
         'name',
         'slug',
         'description',
         'boss_name',
         'contact_discord',
+        'settlement_percent',
         'dirty_balance',
         'dirty_received_total',
         'cleaned_total',
@@ -23,29 +25,20 @@ class Gang extends Model
     ];
 
     protected $casts = [
+        'settlement_percent' => 'decimal:2',
         'dirty_balance' => 'decimal:2',
         'dirty_received_total' => 'decimal:2',
         'cleaned_total' => 'decimal:2',
         'commission_paid_total' => 'decimal:2',
     ];
 
-    public function holding()
-{
-    return $this->hasOne(\App\Models\Holding::class);
-}
-
-    public function invoices()
+    public function company()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->belongsTo(Company::class);
     }
 
-    public function settlements()
+    public function cashDeliveries()
     {
-        return $this->hasMany(Settlement::class);
-    }
-
-    public function cashRollDeliveries()
-    {
-        return $this->hasMany(CashRollDelivery::class);
+        return $this->hasMany(CashDelivery::class);
     }
 }

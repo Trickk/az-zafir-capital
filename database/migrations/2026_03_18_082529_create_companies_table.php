@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('legal_name', 220)->nullable();
 
             $table->enum('type', [
-                'holding',
                 'cultural',
                 'logistics',
                 'hospitality',
@@ -33,9 +32,10 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('tax_id', 100)->nullable();
 
-            $table->boolean('is_internal')->default(true);
             $table->text('description')->nullable();
+
             $table->string('logo_path')->nullable();
+            $table->string('invoice_image_path')->nullable();
 
             $table->enum('status', ['active', 'inactive'])->default('active');
 
@@ -43,8 +43,6 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('slug');
-            $table->index('type');
-            $table->index('is_internal');
             $table->index('status');
         });
     }

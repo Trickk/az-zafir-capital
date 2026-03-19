@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Rulos de dinero')">
+<x-layouts.app :title="__('Entregas de dinero')">
 
     <div class="space-y-6">
 
@@ -10,15 +10,15 @@
 
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <p class="az-eyebrow mb-2">Entrada de capital</p>
-                <h2 class="az-title text-3xl font-semibold">Dinero sucio</h2>
+                <p class="az-eyebrow mb-2">Operativa interna</p>
+                <h2 class="az-title text-3xl font-semibold">Entregas de dinero</h2>
                 <p class="mt-2 az-muted">
-                    Registro de entregas de dinero sucio y actualización de balances.
+                    Registro de entregas de dinero sucio asociadas a bandas y empresas.
                 </p>
             </div>
 
-            <a href="{{ route('admin.cash-rolls.create') }}" class="az-btn az-btn-primary">
-                Nueva entrega
+            <a href="{{ route('admin.cash-deliveries.create') }}" class="az-btn az-btn-primary">
+                Registrar entrega
             </a>
         </div>
 
@@ -28,7 +28,7 @@
                     <tr>
                         <th>Referencia</th>
                         <th>Banda</th>
-                        <th>Holding</th>
+                        <th>Empresa</th>
                         <th>Importe</th>
                         <th>Estado</th>
                         <th></th>
@@ -36,36 +36,40 @@
                 </thead>
 
                 <tbody>
-                    @forelse($cashRolls as $roll)
+                    @forelse($cashDeliveries as $delivery)
                         <tr>
                             <td>
-                                <div class="az-table-primary">{{ $roll->delivery_number }}</div>
-                                <div class="az-table-sub">{{ optional($roll->delivered_at)?->format('d/m/Y H:i') }}</div>
+                                <div class="az-table-primary">{{ $delivery->delivery_number }}</div>
+                                <div class="az-table-sub">
+                                    {{ optional($delivery->delivered_at)->format('d/m/Y H:i') ?: '—' }}
+                                </div>
                             </td>
 
-                            <td>{{ $roll->gang?->name ?? '-' }}</td>
-
-                            <td>{{ $roll->gang->holding->name ?? '-' }}</td>
-
-                            <td>{{ number_format((float) $roll->amount, 2, ',', '.') }} €</td>
+                            <td>{{ $delivery->gang?->name ?? '—' }}</td>
+                            <td>{{ $delivery->company?->name ?? '—' }}</td>
+                            <td>{{ number_format((float) $delivery->amount, 2, ',', '.') }} $</td>
 
                             <td>
                                 <span class="az-status">
-                                    @if($roll->status === 'pending')
+                                    @if($delivery->status === 'pending')
                                         Pendiente
-                                    @elseif($roll->status === 'received')
-                                        Recibido
-                                    @elseif($roll->status === 'verified')
-                                        Verificado
+                                    @elseif($delivery->status === 'received')
+                                        Recibida
+                                    @elseif($delivery->status === 'verified')
+                                        Verificada
                                     @else
-                                        Cancelado
+                                        Cancelada
                                     @endif
                                 </span>
                             </td>
 
                             <td>
                                 <div class="az-table-actions">
-                                    <form method="POST" action="{{ route('admin.cash-rolls.destroy', $roll) }}" onsubmit="return confirm('¿Eliminar este rulo?')">
+                                    <a href="{{ route('admin.cash-deliveries.edit', $delivery) }}" class="az-btn az-btn-secondary az-btn-sm">
+                                        Editar
+                                    </a>
+
+                                    <form method="POST" action="{{ route('admin.cash-deliveries.destroy', $delivery) }}" onsubmit="return confirm('¿Eliminar esta entrega?')">
                                         @csrf
                                         @method('DELETE')
 
@@ -78,8 +82,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="az-muted">
-                                No hay rulos registrados todavía.
+                            <td colspan="6" class="az-muted">
+                                No hay entregas registradas todavía.
                             </td>
                         </tr>
                     @endforelse
@@ -88,9 +92,8 @@
         </div>
 
         <div>
-            {{ $cashRolls->links() }}
+            {{ $cashDeliveries->links() }}
         </div>
-
     </div>
 
 </x-layouts.app>

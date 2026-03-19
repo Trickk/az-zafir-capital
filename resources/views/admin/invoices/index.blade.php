@@ -11,9 +11,9 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <p class="az-eyebrow mb-2">Facturación</p>
-                <h2 class="az-title text-3xl font-semibold">Gestión de facturas</h2>
+                <h2 class="az-title text-3xl font-semibold">Facturas</h2>
                 <p class="mt-2 az-muted">
-                    Facturas emitidas, estado del documento y liquidación asociada.
+                    Facturas congeladas con snapshot completo de banda y empresa.
                 </p>
             </div>
 
@@ -28,9 +28,10 @@
                     <tr>
                         <th>Factura</th>
                         <th>Banda</th>
-                        <th>Holding</th>
                         <th>Empresa</th>
                         <th>Importe</th>
+                        <th>Comision</th>
+                        <th>Banda</th>
                         <th>Estado</th>
                         <th></th>
                     </tr>
@@ -44,19 +45,40 @@
                                 <div class="az-table-sub">{{ $invoice->concept }}</div>
                             </td>
 
-                            <td>{{ $invoice->gang?->name ?? '—' }}</td>
-                            <td>{{ $invoice->holding?->name ?? '—' }}</td>
-                            <td>{{ $invoice->company?->name ?? '—' }}</td>
-                            <td>{{ number_format((float) $invoice->gross_amount, 2, ',', '.') }} €</td>
+                            <td>{{ $invoice->gang_name_snapshot }}</td>
+                            <td>{{ $invoice->company_name_snapshot }}</td>
+                            <td>{{ number_format((float) $invoice->gross_amount, 2, ',', '.') }} $</td>
+                            <td>{{ number_format((float) $invoice->net_amount, 2, ',', '.') }} $</td>
+                            <td>{{ number_format((float) $invoice->commission_amount, 2, ',', '.') }} $</td>
 
                             <td>
                                 <span class="az-status">
-                                    {{ ucfirst($invoice->status) }}
+                                    @if($invoice->status === 'draft')
+                                        Borrador
+                                    @elseif($invoice->status === 'pending')
+                                        Pendiente
+                                    @elseif($invoice->status === 'approved')
+                                        Aprobada
+                                    @elseif($invoice->status === 'rejected')
+                                        Rechazada
+                                    @elseif($invoice->status === 'paid')
+                                        Pagada
+                                    @else
+                                        Cancelada
+                                    @endif
                                 </span>
                             </td>
 
                             <td>
                                 <div class="az-table-actions">
+                                    <a href="{{ route('admin.invoices.preview', $invoice) }}" class="az-btn az-btn-secondary az-btn-sm">
+                                        Vista previa
+                                    </a>
+                                    @if($invoice->pdf_path)
+                                        <a href="{{ asset('storage/' . $invoice->pdf_path) }}" target="_blank" class="az-btn az-btn-secondary az-btn-sm">
+                                            Ver PDF
+                                        </a>
+                                    @endif
                                     <a href="{{ route('admin.invoices.edit', $invoice) }}" class="az-btn az-btn-secondary az-btn-sm">
                                         Editar
                                     </a>
@@ -74,7 +96,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="az-muted">
+                            <td colspan="8" class="az-muted">
                                 No hay facturas registradas todavía.
                             </td>
                         </tr>

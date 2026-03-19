@@ -123,4 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'default_company_address' => env('DEFAULT_COMPANY_ADDRESS', 'Al Nahyan - E25 - Abu Dhabi - Emiratos Árabes Unidos'),
+    'default_company_city' => env('DEFAULT_COMPANY_CITY', 'Abu Dhabi'),
+    'default_company_country' => env('DEFAULT_COMPANY_COUNTRY', 'Emiratos Árabes Unidos'),
+
 ];

@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('cash_roll_deliveries', function (Blueprint $table) {
-
-            $table->dropColumn('roll_count');
-
+       Schema::table('companies', function (Blueprint $table) {
+            $table->unique('tax_id');
         });
     }
 
@@ -23,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('cash_roll_deliveries', function (Blueprint $table) {
+        Schema::table('companies', function (Blueprint $table) {
             //
         });
     }

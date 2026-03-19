@@ -5,7 +5,7 @@
             <p class="az-eyebrow mb-2">Facturación</p>
             <h2 class="az-title text-3xl font-semibold">Editar factura</h2>
             <p class="mt-2 az-muted">
-                Modificar una factura y recalcular automáticamente su liquidación.
+                Si cambian datos de empresa o banda, la recomendación es cancelar la factura y generar una nueva.
             </p>
         </div>
 
@@ -30,33 +30,42 @@
                         <select name="gang_id" class="az-input" required>
                             <option value="">Seleccionar banda</option>
                             @foreach($gangs as $gang)
-                                <option value="{{ $gang->id }}" @selected(old('gang_id', $invoice->gang_id) == $gang->id)>
-                                    {{ $gang->name }}
+                                <option value="{{ $gang->id }}" @selected(old('gang_id', null) == $gang->id)>
+                                    {{ $gang->name }} @if($gang->company) — {{ $gang->company->name }} @endif
                                 </option>
                             @endforeach
                         </select>
+                        <div class="mt-2 text-xs az-muted">
+                            Banda congelada actual: {{ $invoice->gang_name_snapshot }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm az-gold">Cliente</label>
+                        <input
+                            type="text"
+                            name="invoice_customer_name"
+                            value="{{ old('invoice_customer_name', $invoice->invoice_customer_name) }}"
+                            class="az-input"
+                        >
                     </div>
 
                     <div>
-                        <label class="block mb-2 text-sm az-gold">Empresa</label>
-                        <select name="company_id" class="az-input" required>
-                            <option value="">Seleccionar empresa</option>
-                            @foreach($companies as $company)
-                                <option value="{{ $company->id }}" @selected(old('company_id', $invoice->company_id) == $company->id)>
-                                    {{ $company->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <label class="block mb-2 text-sm az-gold">State ID</label>
+                        <input
+                            type="text"
+                            name="invoice_state_id"
+                            value="{{ old('invoice_state_id', $invoice->invoice_state_id) }}"
+                            class="az-input"
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm az-gold">Importe bruto total</label>
+                        <input type="number" step="0.01" name="gross_amount" value="{{ old('gross_amount', $invoice->gross_amount) }}" class="az-input" required>
                     </div>
 
-                    <div>
+                    <div class="md:col-span-2">
                         <label class="block mb-2 text-sm az-gold">Concepto</label>
                         <input type="text" name="concept" value="{{ old('concept', $invoice->concept) }}" class="az-input" required>
-                    </div>
-
-                    <div>
-                        <label class="block mb-2 text-sm az-gold">Importe bruto</label>
-                        <input type="number" step="0.01" name="gross_amount" value="{{ old('gross_amount', $invoice->gross_amount) }}" class="az-input" required>
                     </div>
 
                     <div>
@@ -74,7 +83,6 @@
                         <select name="status" class="az-input" required>
                             <option value="draft" @selected(old('status', $invoice->status) === 'draft')>Borrador</option>
                             <option value="pending" @selected(old('status', $invoice->status) === 'pending')>Pendiente</option>
-                            <option value="reviewed" @selected(old('status', $invoice->status) === 'reviewed')>Revisada</option>
                             <option value="approved" @selected(old('status', $invoice->status) === 'approved')>Aprobada</option>
                             <option value="rejected" @selected(old('status', $invoice->status) === 'rejected')>Rechazada</option>
                             <option value="paid" @selected(old('status', $invoice->status) === 'paid')>Pagada</option>
@@ -85,11 +93,11 @@
 
                 <div>
                     <label class="block mb-2 text-sm az-gold">Descripción</label>
-                    <textarea name="description" rows="4" class="az-input">{{ old('description', $invoice->description) }}</textarea>
+                    <textarea name="description" rows="5" class="az-input">{{ old('description', $invoice->description) }}</textarea>
                 </div>
 
                 <div>
-                    <label class="block mb-2 text-sm az-gold">Notas</label>
+                    <label class="block mb-2 text-sm az-gold">Notas internas</label>
                     <textarea name="notes" rows="4" class="az-input">{{ old('notes', $invoice->notes) }}</textarea>
                 </div>
 

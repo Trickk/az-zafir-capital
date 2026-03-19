@@ -7,12 +7,12 @@
                 Crear factura
             </a>
 
-            <a href="{{ route('admin.cash-rolls.create') }}" class="az-dashboard-action">
+            <a href="{{ route('admin.cash-deliveries.create') }}" class="az-dashboard-action">
                 Nueva entrega
             </a>
 
-            <a href="{{ route('admin.holdings.create') }}" class="az-dashboard-action">
-                Nuevo holding
+            <a href="{{ route('admin.companies.create') }}" class="az-dashboard-action">
+                Nueva empresa
             </a>
 
         </div>
@@ -20,50 +20,28 @@
         <div class="az-dashboard-status">
 
             <span class="az-badge az-badge-gold">
-                Liquidaciones pendientes: {{ $pendingSettlements }}
+                <div class="">Bandas activas: {{ $activeGangs }}<br>
+                    <em class="mt-3 az-muted text-xs">Total registradas: {{ $totalGangs }}</em>
+                </div>
             </span>
 
             <span class="az-badge az-badge-gold">
-                Procesadas: {{ $processedSettlements }}
+                <div class="">Empresas activas: {{ $activeHoldings }}<br>
+                    <em class="mt-3 az-muted text-xs">Total registradas: {{ $totalHoldings }}</em>
+                </div>
+
             </span>
 
             <span class="az-badge az-badge-gold">
-                Liberadas: {{ $releasedSettlements }}
+                 <div class="">Facturas: {{ $totalInvoices }} <br>
+                    <em class="mt-3 az-muted text-xs">Pendientes: {{ $pendingInvoices }} </em>
+                    <em class="mt-3 az-muted text-xs">Aprobadas: {{ $approvedInvoices }}</em>
+                </div>
             </span>
-
         </div>
 
     </div>
     <div class="space-y-6">
-
-        <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
-            <div class="az-kpi-card">
-                <div class="az-kpi-label">Bandas activas</div>
-                <div class="az-kpi-value">{{ $activeGangs }}</div>
-                <div class="mt-3 az-muted text-sm">Total registradas: {{ $totalGangs }}</div>
-            </div>
-
-            <div class="az-kpi-card">
-                <div class="az-kpi-label">Holdings activos</div>
-                <div class="az-kpi-value">{{ $activeHoldings }}</div>
-                <div class="mt-3 az-muted text-sm">Total registrados: {{ $totalHoldings }}</div>
-            </div>
-
-            <div class="az-kpi-card">
-                <div class="az-kpi-label">Facturas</div>
-                <div class="az-kpi-value">{{ $totalInvoices }}</div>
-                <div class="mt-3 az-muted text-sm">
-                    Pendientes: {{ $pendingInvoices }} · Aprobadas: {{ $approvedInvoices }}
-                </div>
-            </div>
-
-            <div class="az-kpi-card">
-                <div class="az-kpi-label">Saldo sucio total</div>
-                <div class="az-kpi-value">{{ number_format($totalDirtyBalance, 2, ',', '.') }} €</div>
-                <div class="mt-3 az-muted text-sm">Capital pendiente de compensación</div>
-            </div>
-        </div>
-
         <div class="grid xl:grid-cols-1 gap-6">
 
             <div class="az-card p-6">
@@ -78,28 +56,28 @@
                     <div class="az-finance-item">
                         <div class="az-finance-label">Dinero sucio recibido</div>
                         <div class="az-finance-value">
-                            {{ number_format($totalDirtyReceived,2,',','.') }} €
+                            {{ number_format($totalDirtyReceived,2,',','.') }} $
                         </div>
                     </div>
 
                     <div class="az-finance-item">
                         <div class="az-finance-label">Dinero limpiado</div>
                         <div class="az-finance-value">
-                            {{ number_format($totalCleaned,2,',','.') }} €
+                            {{ number_format($totalCleaned,2,',','.') }} $
                         </div>
                     </div>
 
                     <div class="az-finance-item">
                         <div class="az-finance-label">Comisión Al-Zafir</div>
                         <div class="az-finance-value">
-                            {{ number_format($totalCommission,2,',','.') }} €
+                            {{ number_format($totalCommission,2,',','.') }} $
                         </div>
                     </div>
 
                     <div class="az-finance-item">
                         <div class="az-finance-label">Saldo pendiente</div>
                         <div class="az-finance-value">
-                            {{ number_format($totalDirtyBalance,2,',','.') }} €
+                            {{ number_format($totalDirtyBalance,2,',','.') }} $
                         </div>
                     </div>
 
@@ -119,6 +97,7 @@
                             <tr>
                                 <th>Factura</th>
                                 <th>Banda</th>
+                                <th>Empresa</th>
                                 <th>Importe</th>
                                 <th>Estado</th>
                             </tr>
@@ -130,8 +109,9 @@
                                     <div class="az-table-primary">{{ $invoice->invoice_number }}</div>
                                     <div class="az-table-sub">{{ $invoice->concept }}</div>
                                 </td>
-                                <td>{{ $invoice->gang?->name ?? '—' }}</td>
-                                <td>{{ number_format((float) $invoice->gross_amount, 2, ',', '.') }} €</td>
+                                <td>{{ $invoice->gang_name_snapshot ?? '—' }}</td>
+                                <td>{{ $invoice->company_name_snapshot ?? '—' }}</td>
+                                <td>{{ number_format((float) $invoice->gross_amount, 2, ',', '.') }} $</td>
                                 <td>
                                     <span class="az-status">{{ ucfirst($invoice->status) }}</span>
                                 </td>
@@ -168,7 +148,7 @@
                                     <div class="az-table-sub">{{ $roll->holding?->name ?? '—' }}</div>
                                 </td>
                                 <td>{{ $roll->gang?->name ?? '—' }}</td>
-                                <td>{{ number_format((float) $roll->amount, 2, ',', '.') }} €</td>
+                                <td>{{ number_format((float) $roll->amount, 2, ',', '.') }} $</td>
                                 <td>
                                     <span class="az-status">{{ ucfirst($roll->status) }}</span>
                                 </td>
