@@ -16,8 +16,10 @@ class Invoice extends Model
         'invoice_state_id',
 
         'gang_name_snapshot',
+        'gang_code_snapshot',
 
         'company_name_snapshot',
+        'company_code_snapshot',
         'company_legal_name_snapshot',
         'company_type_snapshot',
         'company_country_snapshot',
@@ -44,6 +46,9 @@ class Invoice extends Model
         'is_generated_image',
         'public_image_path',
         'pdf_path',
+
+        'png_path',
+        'public_image_url',
 
         'created_by',
         'approved_by',

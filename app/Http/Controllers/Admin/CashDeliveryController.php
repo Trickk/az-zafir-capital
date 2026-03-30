@@ -170,7 +170,9 @@ class CashDeliveryController extends Controller
     private function generateDeliveryNumber(): string
     {
         $year = now()->format('Y');
-        $last = CashDelivery::whereYear('created_at', now()->year)->count() + 1;
+        $last = CashDelivery::withTrashed()
+            ->whereYear('created_at', now()->year)
+            ->count() + 1;
 
         return 'ENT-' . $year . '-' . str_pad((string) $last, 5, '0', STR_PAD_LEFT);
     }

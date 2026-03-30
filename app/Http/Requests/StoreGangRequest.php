@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreGangRequest extends FormRequest
 {
@@ -15,11 +16,16 @@ class StoreGangRequest extends FormRequest
     {
         return [
             'company_id' => ['nullable', 'exists:companies,id'],
-            'name' => ['required', 'string', 'max:150', 'unique:gangs,name'],
+            'name' => [
+                'required',
+                'string',
+                'max:150',
+                Rule::unique('gangs', 'name')->whereNull('deleted_at'),
+            ],
             'description' => ['nullable', 'string'],
             'boss_name' => ['nullable', 'string', 'max:150'],
             'contact_discord' => ['nullable', 'string', 'max:150'],
-            'settlement_percent' => ['required', 'numeric', 'min:0', 'max:100'],
+            'commission_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'status' => ['required', 'in:active,inactive,suspended'],
         ];
     }
@@ -30,8 +36,8 @@ class StoreGangRequest extends FormRequest
             'company_id.exists' => 'La empresa seleccionada no existe.',
             'name.required' => 'El nombre es obligatorio.',
             'name.unique' => 'Ya existe una banda con ese nombre.',
-            'settlement_percent.required' => 'Debes indicar el porcentaje de liquidación.',
-            'settlement_percent.numeric' => 'El porcentaje de liquidación debe ser numérico.',
+            'commission_percent.required' => 'Debes indicar el porcentaje de comisión.',
+            'commission_percent.numeric' => 'El porcentaje de comisión debe ser numérico.',
             'status.required' => 'Debes seleccionar un estado.',
         ];
     }

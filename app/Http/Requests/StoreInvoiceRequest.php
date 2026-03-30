@@ -14,8 +14,8 @@ class StoreInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'invoice_customer_name' => ['nullable', 'string', 'max:180'],
-            'invoice_state_id' => ['nullable', 'string', 'max:120'],
+            'invoice_customer_name' => ['required', 'string', 'max:180'],
+            'invoice_state_id' => ['required', 'string', 'max:120'],
             'gang_id' => ['required', 'exists:gangs,id'],
             'concept' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -30,6 +30,8 @@ class StoreInvoiceRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'invoice_customer_name.required' => 'Debes indicar el cliente',
+            'invoice_state_id.required' => 'Debes indicar el StateID del cliente.',
             'gang_id.required' => 'Debes seleccionar una banda.',
             'gang_id.exists' => 'La banda seleccionada no existe.',
             'concept.required' => 'Debes indicar el concepto.',

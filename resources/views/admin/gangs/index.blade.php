@@ -18,7 +18,7 @@
             </div>
 
             <a href="{{ route('admin.gangs.create') }}" class="az-btn az-btn-primary">
-                Crear banda
+                <i class="fa fa-plus" aria-hidden="true"></i>
             </a>
         </div>
 
@@ -27,9 +27,10 @@
                 <thead>
                     <tr>
                         <th>Banda</th>
+                        <th>Code</th>
                         <th>Empresa</th>
-                        <th>% liquidación</th>
-                        <th>Saldo sucio</th>
+                        <th>% comision</th>
+                        <th>Saldo</th>
                         <th>Estado</th>
                         <th></th>
                     </tr>
@@ -42,10 +43,10 @@
                                 <div class="az-table-primary">{{ $gang->name }}</div>
                                 <div class="az-table-sub">{{ $gang->boss_name ?: $gang->slug }}</div>
                             </td>
-
+                            <td>{{ $gang->gang_code ?? 'Sin asignar' }}</td>
                             <td>{{ $gang->company?->name ?? 'Sin asignar' }}</td>
 
-                            <td>{{ number_format((float) $gang->settlement_percent, 2, ',', '.') }}%</td>
+                            <td>{{ number_format((float) $gang->commission_percent, 2, ',', '.') }}%</td>
 
                             <td>{{ number_format((float) $gang->dirty_balance, 2, ',', '.') }} $</td>
 
@@ -64,7 +65,7 @@
                             <td>
                                 <div class="az-table-actions">
                                     <a href="{{ route('admin.gangs.edit', $gang) }}" class="az-btn az-btn-secondary az-btn-sm">
-                                        Editar
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
                                     </a>
 
                                     <form method="POST" action="{{ route('admin.gangs.destroy', $gang) }}" onsubmit="return confirm('¿Eliminar esta banda?')">
@@ -72,7 +73,7 @@
                                         @method('DELETE')
 
                                         <button type="submit" class="az-btn az-btn-secondary az-btn-sm">
-                                            Eliminar
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>
                                 </div>

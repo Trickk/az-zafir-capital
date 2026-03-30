@@ -36,13 +36,14 @@ class GangController extends Controller
         $data = $request->validated();
 
         Gang::create([
+            'gang_code' => $this->generateGangCode(),
             'company_id' => $data['company_id'] ?? null,
             'name' => $data['name'],
             'slug' => Str::slug($data['name']),
             'description' => $data['description'] ?? null,
             'boss_name' => $data['boss_name'] ?? null,
             'contact_discord' => $data['contact_discord'] ?? null,
-            'settlement_percent' => $data['settlement_percent'],
+            'commission_percent' => $data['commission_percent'],
             'status' => $data['status'],
         ]);
 
@@ -71,7 +72,7 @@ class GangController extends Controller
             'description' => $data['description'] ?? null,
             'boss_name' => $data['boss_name'] ?? null,
             'contact_discord' => $data['contact_discord'] ?? null,
-            'settlement_percent' => $data['settlement_percent'],
+            'commission_percent' => $data['commission_percent'],
             'status' => $data['status'],
         ]);
 
@@ -87,5 +88,14 @@ class GangController extends Controller
         return redirect()
             ->route('admin.gangs.index')
             ->with('success', 'Banda eliminada correctamente.');
+    }
+
+    private function generateGangCode(): string
+    {
+        do {
+            $code = 'GAN-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+        } while (\App\Models\Gang::withTrashed()->where('gang_code', $code)->exists());
+
+        return $code;
     }
 }

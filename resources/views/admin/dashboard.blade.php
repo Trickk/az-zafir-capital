@@ -3,17 +3,29 @@
 
         <div class="az-dashboard-actions">
 
-            <a href="{{ route('admin.invoices.create') }}" class="az-dashboard-action">
-                Crear factura
-            </a>
+            <flux:tooltip content="Nueva factura" position="top">
+                <a href="{{ route('admin.invoices.create') }}" class="az-dashboard-action">
+                    <i class="fa-solid fa-file-invoice-dollar fa-2xl"></i>
+                </a>
+            </flux:tooltip>
 
-            <a href="{{ route('admin.cash-deliveries.create') }}" class="az-dashboard-action">
-                Nueva entrega
-            </a>
+            <flux:tooltip content="Nueva entrega" position="top">
+                <a href="{{ route('admin.cash-deliveries.create') }}" class="az-dashboard-action">
+                    <i class="fa-solid fa-handshake fa-2xl"></i>
+                </a>
+            </flux:tooltip>
 
-            <a href="{{ route('admin.companies.create') }}" class="az-dashboard-action">
-                Nueva empresa
-            </a>
+            <flux:tooltip content="Nueva empresa" position="top">
+                <a href="{{ route('admin.companies.create') }}" class="az-dashboard-action">
+                    <i class="fa-solid fa-building fa-2xl"></i>
+                </a>
+            </flux:tooltip>
+
+            <flux:tooltip content="Nueva banda" position="top">
+                <a href="{{ route('admin.gangs.create') }}" class="az-dashboard-action">
+                    <i class="fa-solid fa-users fa-2xl"></i>
+                </a>
+            </flux:tooltip>
 
         </div>
 
@@ -61,14 +73,14 @@
                     </div>
 
                     <div class="az-finance-item">
-                        <div class="az-finance-label">Dinero limpiado</div>
+                        <div class="az-finance-label">Comisión Al-Zafir</div>
                         <div class="az-finance-value">
                             {{ number_format($totalCleaned,2,',','.') }} $
                         </div>
                     </div>
 
                     <div class="az-finance-item">
-                        <div class="az-finance-label">Comisión Al-Zafir</div>
+                        <div class="az-finance-label">Dinero a Bandas</div>
                         <div class="az-finance-value">
                             {{ number_format($totalCommission,2,',','.') }} $
                         </div>

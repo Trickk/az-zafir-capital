@@ -71,24 +71,35 @@
 
                             <td>
                                 <div class="az-table-actions">
-                                    <a href="{{ route('admin.invoices.preview', $invoice) }}" class="az-btn az-btn-secondary az-btn-sm">
-                                        Vista previa
-                                    </a>
+
+                                    @if($invoice->public_image_url)
+                                        <a href="{{ $invoice->public_image_url }}" target="_blank" class="az-btn az-btn-secondary az-btn-sm">
+                                            <i class="fa-solid fa-file-image"></i>
+                                        </a>
+                                    @else
+                                         <button type="submit" class="az-btn az-btn-secondary az-btn-sm">
+                                            <i class="fa-solid fa-file-image"></i>
+                                        </button>
+                                    @endif
+
+                                        <a href="{{ route('admin.invoices.preview', $invoice) }}" class="az-btn az-btn-secondary az-btn-sm">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
                                     @if($invoice->pdf_path)
                                         <a href="{{ asset('storage/' . $invoice->pdf_path) }}" target="_blank" class="az-btn az-btn-secondary az-btn-sm">
-                                            Ver PDF
+                                            <i class="fa-solid fa-file-circle-plus"></i>
                                         </a>
                                     @endif
-                                    <a href="{{ route('admin.invoices.edit', $invoice) }}" class="az-btn az-btn-secondary az-btn-sm">
+                                    {{-- <a href="{{ route('admin.invoices.edit', $invoice) }}" class="az-btn az-btn-secondary az-btn-sm">
                                         Editar
-                                    </a>
+                                    </a> --}}
 
                                     <form method="POST" action="{{ route('admin.invoices.destroy', $invoice) }}" onsubmit="return confirm('¿Eliminar esta factura?')">
                                         @csrf
                                         @method('DELETE')
 
                                         <button type="submit" class="az-btn az-btn-secondary az-btn-sm">
-                                            Eliminar
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>
                                 </div>

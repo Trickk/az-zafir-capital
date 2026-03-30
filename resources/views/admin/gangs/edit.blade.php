@@ -36,7 +36,7 @@
                             <option value="">Seleccionar empresa</option>
                             @foreach($companies as $company)
                                 <option value="{{ $company->id }}" @selected(old('company_id', $gang->company_id) == $company->id)>
-                                    {{ $company->name }}
+                                    {{ $company->name }} ({{ $company->type }})
                                 </option>
                             @endforeach
                         </select>
@@ -53,8 +53,8 @@
                     </div>
 
                     <div>
-                        <label class="block mb-2 text-sm az-gold">Porcentaje de liquidación para la banda (%)</label>
-                        <input type="number" step="0.01" name="settlement_percent" value="{{ old('settlement_percent', $gang->settlement_percent) }}" class="az-input" required>
+                        <label class="block mb-2 text-sm az-gold">Porcentaje que se le quita a la banda (%)</label>
+                        <input type="number" step="0.01" name="commission_percent" value="{{ old('commission_percent', $gang->settlement_percent) }}" class="az-input" required>
                     </div>
 
                     <div>

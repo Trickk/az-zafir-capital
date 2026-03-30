@@ -22,12 +22,14 @@ class UpdateGangRequest extends FormRequest
                 'required',
                 'string',
                 'max:150',
-                Rule::unique('gangs', 'name')->ignore($gangId),
+                Rule::unique('gangs', 'name')
+                    ->ignore($gangId)
+                    ->whereNull('deleted_at'),
             ],
             'description' => ['nullable', 'string'],
             'boss_name' => ['nullable', 'string', 'max:150'],
             'contact_discord' => ['nullable', 'string', 'max:150'],
-            'settlement_percent' => ['required', 'numeric', 'min:0', 'max:100'],
+            'commission_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'status' => ['required', 'in:active,inactive,suspended'],
         ];
     }
@@ -38,8 +40,8 @@ class UpdateGangRequest extends FormRequest
             'company_id.exists' => 'La empresa seleccionada no existe.',
             'name.required' => 'El nombre es obligatorio.',
             'name.unique' => 'Ya existe una banda con ese nombre.',
-            'settlement_percent.required' => 'Debes indicar el porcentaje de liquidación.',
-            'settlement_percent.numeric' => 'El porcentaje de liquidación debe ser numérico.',
+            'commission_percent.required' => 'Debes indicar el porcentaje de comisión.',
+            'commission_percent.numeric' => 'El porcentaje de comisión debe ser numérico.',
             'status.required' => 'Debes seleccionar un estado.',
         ];
     }

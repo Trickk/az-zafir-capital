@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Browsershot\Browsershot;
 
 class InvoiceController extends Controller
 {
@@ -49,10 +50,11 @@ class InvoiceController extends Controller
         $company = $gang->company;
 
         $gross = (float) $data['gross_amount'];
-        $settlementPercent = (float) $gang->settlement_percent;
-        $commissionPercent = round(100 - $settlementPercent, 2);
-        $netAmount = round($gross * ($settlementPercent / 100), 2);
-        $commissionAmount = round($gross - $netAmount, 2);
+        $commissionPercent = (float) $gang->commission_percent;
+        $settlementPercent = round(100 - $commissionPercent, 2);
+
+        $commissionAmount = round($gross * ($commissionPercent / 100), 2);
+        $netAmount = round($gross - $commissionAmount, 2);
 
         DB::transaction(function () use ($data, $gang, $company, $gross, $settlementPercent, $commissionPercent, $netAmount, $commissionAmount) {
             $invoice = Invoice::create([
@@ -61,7 +63,6 @@ class InvoiceController extends Controller
                 'invoice_customer_name' => $data['invoice_customer_name'] ?? null,
                 'invoice_state_id' => $data['invoice_state_id'] ?? null,
                 'gang_name_snapshot' => $gang->name,
-
                 'company_name_snapshot' => $company->name,
                 'company_legal_name_snapshot' => $company->legal_name,
                 'company_type_snapshot' => $company->type,
@@ -131,7 +132,7 @@ class InvoiceController extends Controller
     {
         $data = $request->validated();
 
-        $gang = Gang::with('company')->findOrFail($data['gang_id']);
+        $gang = Gang::with('company')->findOrFail(id: $data['gang_id']);
 
         if (! $gang->company) {
             return back()
@@ -144,10 +145,11 @@ class InvoiceController extends Controller
         $company = $gang->company;
 
         $gross = (float) $data['gross_amount'];
-        $settlementPercent = (float) $gang->settlement_percent;
-        $commissionPercent = round(100 - $settlementPercent, 2);
-        $netAmount = round($gross * ($settlementPercent / 100), 2);
-        $commissionAmount = round($gross - $netAmount, 2);
+        $commissionPercent = (float) $gang->commission_percent;
+        $settlementPercent = round(100 - $commissionPercent, 2);
+
+        $commissionAmount = round($gross * ($commissionPercent / 100), 2);
+        $netAmount = round($gross - $commissionAmount, 2);
 
         DB::transaction(function () use ($data, $invoice, $gang, $company, $gross, $settlementPercent, $commissionPercent, $netAmount, $commissionAmount) {
             $oldStatus = $invoice->status;
@@ -302,4 +304,46 @@ public function generatePdf(Invoice $invoice): RedirectResponse
         ->route('admin.invoices.index')
         ->with('success', 'PDF de factura generado correctamente.');
 }
+
+public function publicRender(Invoice $invoice): View
+{
+    return view('admin.invoices.public-render', [
+        'invoice' => $invoice,
+        'isPdf' => false,
+        'isPng' => true,
+    ]);
+}
+
+public function generatePng(Invoice $invoice): RedirectResponse
+{
+    $url = route('invoices.public-render', $invoice);
+
+    $fileName = 'invoices/png/' . $invoice->invoice_number . '.png';
+    $fullPath = storage_path('app/public/' . $fileName);
+
+    if (! is_dir(dirname($fullPath))) {
+        mkdir(dirname($fullPath), 0775, true);
+    }
+
+    Browsershot::url($url)
+        ->windowSize(1400, 1800)
+        ->deviceScaleFactor(2)
+        ->waitUntilNetworkIdle()
+        ->showBackground()
+        ->save($fullPath);
+
+    $publicUrl = asset('storage/' . $fileName);
+
+    $invoice->update([
+        'png_path' => $fileName,
+        'public_image_url' => $publicUrl,
+        'is_generated_image' => true,
+        'public_image_path' => $fileName,
+    ]);
+
+    return redirect()
+        ->route('admin.invoices.index')
+        ->with('success', 'PNG de factura generado correctamente.');
+}
+
 }

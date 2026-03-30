@@ -41,6 +41,7 @@ class CompanyController extends Controller
         }
 
         Company::create([
+            'company_code' => $this->generateCompanyCode(),
             'name' => $data['name'],
             'slug' => Str::slug($data['name']),
             'legal_name' => $data['legal_name'] ?? null,
@@ -134,23 +135,32 @@ class CompanyController extends Controller
     }
 
     private function generateTaxId(?string $country = null): string
-{
-    $prefix = match (strtoupper((string) $country)) {
-        'UAE' => 'UAE',
-        'ESPAÑA', 'SPAIN', 'ES' => 'ES',
-        'UK', 'UNITED KINGDOM', 'GB' => 'UK',
-        'USA', 'US' => 'US',
-        default => 'INT',
-    };
+    {
+        $prefix = match (strtoupper((string) $country)) {
+            'UAE' => 'UAE',
+            'ESPAÑA', 'SPAIN', 'ES' => 'ES',
+            'UK', 'UNITED KINGDOM', 'GB' => 'UK',
+            'USA', 'US' => 'US',
+            default => 'INT',
+        };
 
-    do {
-        $taxId = sprintf(
-            '%s-AZ-%s',
-            $prefix,
-            strtoupper(substr(bin2hex(random_bytes(4)), 0, 8))
-        );
-    } while (\App\Models\Company::withTrashed()->where('tax_id', $taxId)->exists());
+        do {
+            $taxId = sprintf(
+                '%s-AZ-%s',
+                $prefix,
+                strtoupper(substr(bin2hex(random_bytes(4)), 0, 8))
+            );
+        } while (\App\Models\Company::withTrashed()->where('tax_id', $taxId)->exists());
 
-    return $taxId;
-}
+        return $taxId;
+    }
+
+    private function generateCompanyCode(): string
+    {
+        do {
+            $code = 'COM-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+        } while (\App\Models\Company::withTrashed()->where('company_code', $code)->exists());
+
+        return $code;
+    }
 }

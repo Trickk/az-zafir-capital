@@ -10,13 +10,14 @@ class Gang extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'gang_code',
         'company_id',
         'name',
         'slug',
         'description',
         'boss_name',
         'contact_discord',
-        'settlement_percent',
+        'commission_percent',
         'dirty_balance',
         'dirty_received_total',
         'cleaned_total',
@@ -25,7 +26,7 @@ class Gang extends Model
     ];
 
     protected $casts = [
-        'settlement_percent' => 'decimal:2',
+        'commission_percent' => 'decimal:2',
         'dirty_balance' => 'decimal:2',
         'dirty_received_total' => 'decimal:2',
         'cleaned_total' => 'decimal:2',

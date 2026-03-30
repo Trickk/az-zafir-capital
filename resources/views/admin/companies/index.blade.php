@@ -18,7 +18,7 @@
             </div>
 
             <a href="{{ route('admin.companies.create') }}" class="az-btn az-btn-primary">
-                Crear empresa
+                <i class="fa fa-plus" aria-hidden="true"></i>
             </a>
         </div>
 
@@ -27,6 +27,7 @@
                 <thead>
                     <tr>
                         <th>Empresa</th>
+                        <th>Code</th>
                         <th>Responsable</th>
                         <th>Tipo</th>
                         <th>Ubicación</th>
@@ -54,6 +55,7 @@
                                     </div>
                                 </div>
                             </td>
+                            <td>{{ $company->company_code ?? '—' }}</td>
                             <td>{{ $company->responsible_name ?? '—' }}</td>
                             <td>{{ ucfirst($company->type) }}</td>
 
@@ -73,7 +75,7 @@
                             <td>
                                 <div class="az-table-actions">
                                     <a href="{{ route('admin.companies.edit', $company) }}" class="az-btn az-btn-secondary az-btn-sm">
-                                        Editar
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
                                     </a>
 
                                     <form method="POST" action="{{ route('admin.companies.destroy', $company) }}" onsubmit="return confirm('¿Eliminar esta empresa?')">
@@ -81,7 +83,7 @@
                                         @method('DELETE')
 
                                         <button type="submit" class="az-btn az-btn-secondary az-btn-sm">
-                                            Eliminar
+                                            <i class="fa fa-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>
                                 </div>

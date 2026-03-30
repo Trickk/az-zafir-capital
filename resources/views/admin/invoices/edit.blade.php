@@ -26,20 +26,6 @@
 
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block mb-2 text-sm az-gold">Banda</label>
-                        <select name="gang_id" class="az-input" required>
-                            <option value="">Seleccionar banda</option>
-                            @foreach($gangs as $gang)
-                                <option value="{{ $gang->id }}" @selected(old('gang_id', null) == $gang->id)>
-                                    {{ $gang->name }} @if($gang->company) — {{ $gang->company->name }} @endif
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="mt-2 text-xs az-muted">
-                            Banda congelada actual: {{ $invoice->gang_name_snapshot }}
-                        </div>
-                    </div>
-                    <div>
                         <label class="block mb-2 text-sm az-gold">Cliente</label>
                         <input
                             type="text"
