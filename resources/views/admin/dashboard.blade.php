@@ -28,8 +28,23 @@
             </flux:tooltip>
 
         </div>
+        <div class="az-finance-inline">
+        <div class="az-finance-inline-item">
+            <span class="az-finance-inline-label">Dinero sucio</span>
+            <span class="az-finance-inline-value">{{ number_format($totalDirtyBalance ?? 0, 2, ',', '.') }} €</span>
+        </div>
 
-        <div class="az-dashboard-status">
+        <div class="az-finance-inline-item">
+            <span class="az-finance-inline-label">Dinero limpio</span>
+            <span class="az-finance-inline-value">{{ number_format($totalCleaned ?? 0, 2, ',', '.') }} €</span>
+        </div>
+
+        <div class="az-finance-inline-item">
+            <span class="az-finance-inline-label">Comisión</span>
+            <span class="az-finance-inline-value">{{ number_format($totalCommission ?? 0, 2, ',', '.') }} €</span>
+        </div>
+    </div>
+        {{-- <div class="az-dashboard-status">
 
             <span class="az-badge az-badge-gold">
                 <div class="">Bandas activas: {{ $activeGangs }}<br>
@@ -50,53 +65,10 @@
                     <em class="mt-3 az-muted text-xs">Aprobadas: {{ $approvedInvoices }}</em>
                 </div>
             </span>
-        </div>
+        </div> --}}
 
     </div>
     <div class="space-y-6">
-        <div class="grid xl:grid-cols-1 gap-6">
-
-            <div class="az-card p-6">
-                <div class="flex items-end justify-between gap-6">
-                    <div>
-                        <p class="az-eyebrow mb-2">Resumen financiero</p>
-                    </div>
-                </div>
-
-                <div class="az-finance-row">
-
-                    <div class="az-finance-item">
-                        <div class="az-finance-label">Dinero sucio recibido</div>
-                        <div class="az-finance-value">
-                            {{ number_format($totalDirtyReceived,2,',','.') }} $
-                        </div>
-                    </div>
-
-                    <div class="az-finance-item">
-                        <div class="az-finance-label">Comisión Al-Zafir</div>
-                        <div class="az-finance-value">
-                            {{ number_format($totalCleaned,2,',','.') }} $
-                        </div>
-                    </div>
-
-                    <div class="az-finance-item">
-                        <div class="az-finance-label">Dinero a Bandas</div>
-                        <div class="az-finance-value">
-                            {{ number_format($totalCommission,2,',','.') }} $
-                        </div>
-                    </div>
-
-                    <div class="az-finance-item">
-                        <div class="az-finance-label">Saldo pendiente</div>
-                        <div class="az-finance-value">
-                            {{ number_format($totalDirtyBalance,2,',','.') }} $
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
         <div class="grid xl:grid-cols-2 gap-6">
 
             <div class="az-card p-6">

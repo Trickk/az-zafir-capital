@@ -36,7 +36,7 @@ Route::get('/contact', function () {
 // Route::middleware(['auth', 'verified'])->group(function () {
 //     Route::view('testdashboard', 'dashboard')->name('dashboard');
 // });
- Route::get('/invoice-public/{invoice}', [InvoiceController::class, 'publicRender'])
+ Route::get('/invoice-public/{token}', [InvoiceController::class, 'publicRender'])
     ->name('invoices.public-render');
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {

@@ -62,6 +62,7 @@ class InvoiceController extends Controller
                 'internal_reference' => $this->generateInternalReference(),
                 'invoice_customer_name' => $data['invoice_customer_name'] ?? null,
                 'invoice_state_id' => $data['invoice_state_id'] ?? null,
+                'public_token' => $this->generatePublicToken(),
                 'gang_name_snapshot' => $gang->name,
                 'company_name_snapshot' => $company->name,
                 'company_legal_name_snapshot' => $company->legal_name,
@@ -305,8 +306,10 @@ public function generatePdf(Invoice $invoice): RedirectResponse
         ->with('success', 'PDF de factura generado correctamente.');
 }
 
-public function publicRender(Invoice $invoice): View
+public function publicRender(string $token): View
 {
+    $invoice = Invoice::where('public_token', $token)->firstOrFail();
+
     return view('admin.invoices.public-render', [
         'invoice' => $invoice,
         'isPdf' => false,
@@ -316,7 +319,7 @@ public function publicRender(Invoice $invoice): View
 
 public function generatePng(Invoice $invoice): RedirectResponse
 {
-    $url = route('invoices.public-render', $invoice);
+    $url = route('invoices.public-render', $invoice->public_token);
 
     $fileName = 'invoices/png/' . $invoice->invoice_number . '.png';
     $fullPath = storage_path('app/public/' . $fileName);
@@ -344,6 +347,15 @@ public function generatePng(Invoice $invoice): RedirectResponse
     return redirect()
         ->route('admin.invoices.index')
         ->with('success', 'PNG de factura generado correctamente.');
+}
+
+private function generatePublicToken(): string
+{
+    do {
+        $token = \Illuminate\Support\Str::random(40);
+    } while (\App\Models\Invoice::where('public_token', $token)->exists());
+
+    return $token;
 }
 
 }

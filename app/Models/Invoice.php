@@ -15,6 +15,8 @@ class Invoice extends Model
         'invoice_customer_name',
         'invoice_state_id',
 
+        'public_token',
+
         'gang_name_snapshot',
         'gang_code_snapshot',
 

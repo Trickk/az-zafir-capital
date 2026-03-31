@@ -1318,3 +1318,49 @@ font-family:Georgia,serif;
 color:var(--az-gold);
 
 }
+
+
+.az-dashboard-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+    padding:18px 20px;
+    border:1px solid var(--az-line);
+    border-radius:18px;
+    background:
+        radial-gradient(circle at top right, rgba(212,175,55,0.08), transparent 40%),
+        linear-gradient(180deg,#111,#0b0b0b);
+}
+
+.az-finance-inline{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+}
+
+.az-finance-inline-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px;
+    border-radius:12px;
+    border:1px solid var(--az-line);
+    background:rgba(255,255,255,0.02);
+}
+
+.az-finance-inline-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--az-muted);
+}
+
+.az-finance-inline-value{
+    font-size:15px;
+    font-weight:600;
+    color:var(--az-gold-light);
+}
