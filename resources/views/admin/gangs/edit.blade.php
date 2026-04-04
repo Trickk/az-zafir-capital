@@ -27,7 +27,7 @@
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label class="block mb-2 text-sm az-gold">Nombre</label>
-                        <input type="text" name="name" value="{{ old('name', $gang->name) }}" class="az-input" required>
+                        <input disabled type="text" name="name" value="{{ old('name', $gang->name) }}" class="az-input" required>
                     </div>
 
                     <div>
@@ -44,7 +44,7 @@
 
                     <div>
                         <label class="block mb-2 text-sm az-gold">Líder</label>
-                        <input type="text" name="boss_name" value="{{ old('boss_name', $gang->boss_name) }}" class="az-input">
+                        <input disabled type="text" name="boss_name" value="{{ old('boss_name', $gang->boss_name) }}" class="az-input">
                     </div>
 
                     <div>

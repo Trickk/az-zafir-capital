@@ -29,23 +29,31 @@
 
             <nav class="flex-1 p-4 space-y-2">
                 <a href="{{ route('admin.dashboard') }}" class="az-admin-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    Panel principal
+                    <i class="fa-solid fa-gauge fa-l"></i> Panel principal
                 </a>
 
                 <a href="{{ route('admin.gangs.index') }}" class="az-admin-link {{ request()->routeIs('admin.gangs.*') ? 'active' : '' }}">
-                    Bandas
+                    <i class="fa-solid fa-users fa-l"></i>Bandas
                 </a>
 
                 <a href="{{ route('admin.companies.index') }}" class="az-admin-link {{ request()->routeIs('admin.companies.*') ? 'active' : '' }}">
-                    Empresas
+                    <i class="fa-solid fa-building fa-l"></i> Empresas
                 </a>
 
                 <a href="{{ route('admin.invoices.index') }}" class="az-admin-link {{ request()->routeIs('admin.invoices.*') ? 'active' : '' }}">
-                    Facturas
+                    <i class="fa-solid fa-file-invoice-dollar fa-l"></i> Facturas
                 </a>
 
                 <a href="{{ route('admin.cash-deliveries.index') }}" class="az-admin-link {{ request()->routeIs('admin.cash-deliveries.*') ? 'active' : '' }}">
-                    Entregas de dinero
+                    <i class="fa-solid fa-handshake fa-l"></i> Entregas de dinero
+                </a>
+
+                <a href="" class="az-admin-link">
+                    <i class="fa-solid fa-piggy-bank fa-l"></i> Fondo Matrix
+                </a>
+
+                <a href="" class="az-admin-link">
+                    <i class="fa-solid fa-gears fa-l"></i> Ajustes
                 </a>
             </nav>
 

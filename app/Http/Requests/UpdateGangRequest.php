@@ -17,15 +17,6 @@ class UpdateGangRequest extends FormRequest
         $gangId = $this->route('gang')->id;
 
         return [
-            'company_id' => ['nullable', 'exists:companies,id'],
-            'name' => [
-                'required',
-                'string',
-                'max:150',
-                Rule::unique('gangs', 'name')
-                    ->ignore($gangId)
-                    ->whereNull('deleted_at'),
-            ],
             'description' => ['nullable', 'string'],
             'boss_name' => ['nullable', 'string', 'max:150'],
             'contact_discord' => ['nullable', 'string', 'max:150'],
@@ -37,8 +28,6 @@ class UpdateGangRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'company_id.exists' => 'La empresa seleccionada no existe.',
-            'name.required' => 'El nombre es obligatorio.',
             'name.unique' => 'Ya existe una banda con ese nombre.',
             'commission_percent.required' => 'Debes indicar el porcentaje de comisión.',
             'commission_percent.numeric' => 'El porcentaje de comisión debe ser numérico.',

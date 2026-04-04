@@ -276,22 +276,32 @@ class InvoiceController extends Controller
     }
 
     public function preview(Invoice $invoice): View
-{
-    return view('admin.invoices.preview', compact('invoice'));
-}
+    {
+        return view('admin.invoices.preview', [
+            'invoice' => $invoice,
+            'isPdf' => false,
+            'isPng' => false,
+        ]);
+    }
 
-public function downloadPdf(Invoice $invoice)
-{
-    $pdf = Pdf::loadView('admin.invoices.pdf', compact('invoice'))
-        ->setPaper('a4', 'portrait');
+    public function downloadPdf(Invoice $invoice)
+    {
+        $pdf = Pdf::loadView('admin.invoices.pdf', [
+            'invoice' => $invoice,
+            'isPdf' => true,
+            'isPng' => false,
+        ])->setPaper('a4', 'portrait');
 
-    return $pdf->download($invoice->invoice_number . '.pdf');
-}
+        return $pdf->download($invoice->invoice_number . '.pdf');
+    }
 
 public function generatePdf(Invoice $invoice): RedirectResponse
 {
-    $pdf = Pdf::loadView('admin.invoices.pdf', compact('invoice'))
-        ->setPaper('a4', 'portrait');
+    $pdf = Pdf::loadView('admin.invoices.pdf', [
+        'invoice' => $invoice,
+        'isPdf' => true,
+        'isPng' => false,
+    ])->setPaper('a4', 'portrait');
 
     $fileName = 'invoices/pdf/' . $invoice->invoice_number . '.pdf';
 
@@ -319,6 +329,14 @@ public function publicRender(string $token): View
 
 public function generatePng(Invoice $invoice): RedirectResponse
 {
+    if (! $invoice->public_token) {
+        $invoice->update([
+            'public_token' => $this->generatePublicToken(),
+        ]);
+
+        $invoice->refresh();
+    }
+
     $url = route('invoices.public-render', $invoice->public_token);
 
     $fileName = 'invoices/png/' . $invoice->invoice_number . '.png';
@@ -332,7 +350,9 @@ public function generatePng(Invoice $invoice): RedirectResponse
         ->windowSize(1400, 1800)
         ->deviceScaleFactor(2)
         ->waitUntilNetworkIdle()
+        ->setDelay(500)
         ->showBackground()
+        ->noSandbox()
         ->save($fullPath);
 
     $publicUrl = asset('storage/' . $fileName);

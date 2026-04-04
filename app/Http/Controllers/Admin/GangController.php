@@ -66,9 +66,6 @@ class GangController extends Controller
         $data = $request->validated();
 
         $gang->update([
-            'company_id' => $data['company_id'] ?? null,
-            'name' => $data['name'],
-            'slug' => Str::slug($data['name']),
             'description' => $data['description'] ?? null,
             'boss_name' => $data['boss_name'] ?? null,
             'contact_discord' => $data['contact_discord'] ?? null,

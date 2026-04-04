@@ -44,7 +44,9 @@
                                 <div class="az-table-sub">{{ $gang->boss_name ?: $gang->slug }}</div>
                             </td>
                             <td>{{ $gang->gang_code ?? 'Sin asignar' }}</td>
-                            <td>{{ $gang->company?->name ?? 'Sin asignar' }}</td>
+                            <td>{{ $gang->company?->name ?? 'Sin asignar' }}
+                                <br><em>{{ ucfirst($gang->company?->type ?? '') }}</em>
+                            </td>
 
                             <td>{{ number_format((float) $gang->commission_percent, 2, ',', '.') }}%</td>
 
