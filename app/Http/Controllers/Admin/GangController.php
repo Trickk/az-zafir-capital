@@ -7,7 +7,9 @@ use App\Http\Requests\StoreGangRequest;
 use App\Http\Requests\UpdateGangRequest;
 use App\Models\Company;
 use App\Models\Gang;
+use App\Models\MatrixFund;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -15,7 +17,7 @@ class GangController extends Controller
 {
     public function index(): View
     {
-        $gangs = Gang::with('company')
+        $gangs = Gang::with(['company', 'matrixFund'])
             ->latest()
             ->paginate(12);
 
@@ -35,17 +37,28 @@ class GangController extends Controller
     {
         $data = $request->validated();
 
-        Gang::create([
-            'gang_code' => $this->generateGangCode(),
-            'company_id' => $data['company_id'] ?? null,
-            'name' => $data['name'],
-            'slug' => Str::slug($data['name']),
-            'description' => $data['description'] ?? null,
-            'boss_name' => $data['boss_name'] ?? null,
-            'contact_discord' => $data['contact_discord'] ?? null,
-            'commission_percent' => $data['commission_percent'],
-            'status' => $data['status'],
-        ]);
+        DB::transaction(function () use ($data) {
+            $gang = Gang::create([
+                'gang_code' => $this->generateGangCode(),
+                'company_id' => $data['company_id'] ?? null,
+                'name' => $data['name'],
+                'slug' => Str::slug($data['name']),
+                'description' => $data['description'] ?? null,
+                'boss_name' => $data['boss_name'] ?? null,
+                'contact_discord' => $data['contact_discord'] ?? null,
+                'commission_percent' => $data['commission_percent'] ?? 10,
+                'matrix_percent' => $data['matrix_percent'] ?? 10,
+                'operating_balance' => 0,
+                'status' => $data['status'],
+            ]);
+
+            MatrixFund::create([
+                'gang_id' => $gang->id,
+                'balance' => 0,
+                'total_in' => 0,
+                'total_out' => 0,
+            ]);
+        });
 
         return redirect()
             ->route('admin.gangs.index')
@@ -66,10 +79,14 @@ class GangController extends Controller
         $data = $request->validated();
 
         $gang->update([
+            'company_id' => $data['company_id'] ?? null,
+            'name' => $data['name'],
+            'slug' => Str::slug($data['name']),
             'description' => $data['description'] ?? null,
             'boss_name' => $data['boss_name'] ?? null,
             'contact_discord' => $data['contact_discord'] ?? null,
-            'commission_percent' => $data['commission_percent'],
+            'commission_percent' => $data['commission_percent'] ?? 10,
+            'matrix_percent' => $data['matrix_percent'] ?? 10,
             'status' => $data['status'],
         ]);
 
@@ -91,7 +108,7 @@ class GangController extends Controller
     {
         do {
             $code = 'GAN-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
-        } while (\App\Models\Gang::withTrashed()->where('gang_code', $code)->exists());
+        } while (Gang::withTrashed()->where('gang_code', $code)->exists());
 
         return $code;
     }

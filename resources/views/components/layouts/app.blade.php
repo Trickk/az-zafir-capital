@@ -48,19 +48,14 @@
                     <i class="fa-solid fa-handshake fa-l"></i> Entregas de dinero
                 </a>
 
-                <a href="" class="az-admin-link">
+                <a href="{{ route('admin.matrix-funds.index') }}" class="az-admin-link {{ request()->routeIs('admin.matrix-funds.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-piggy-bank fa-l"></i> Fondo Matrix
-                </a>
-
-                <a href="" class="az-admin-link">
-                    <i class="fa-solid fa-gears fa-l"></i> Ajustes
                 </a>
             </nav>
 
             <div class="p-4 border-t border-[var(--az-line)]">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <button
                         type="submit"
                         class="w-full az-btn az-btn-secondary"

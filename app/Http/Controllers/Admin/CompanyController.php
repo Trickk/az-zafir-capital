@@ -7,7 +7,6 @@ use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -75,25 +74,11 @@ class CompanyController extends Controller
         $invoiceImagePath = $company->invoice_image_path;
 
         if ($request->hasFile('logo')) {
-            if ($company->logo_path) {
-                //Storage::disk('public')->delete($company->logo_path);
-            }
-
             $logoPath = $request->file('logo')->store('companies/logos', 'public');
         }
 
         if ($request->hasFile('invoice_image')) {
-            if ($company->invoice_image_path) {
-                //Storage::disk('public')->delete($company->invoice_image_path);
-            }
-
             $invoiceImagePath = $request->file('invoice_image')->store('companies/invoice-images', 'public');
-        }
-        $tax_id = null;
-        if($company->tax_id == null){
-            $tax_id = $this->generateTaxId($data['country'] ?? null);
-        }else{
-            $tax_id = $company->tax_id;
         }
 
         $company->update([
@@ -104,7 +89,7 @@ class CompanyController extends Controller
             'country' => $data['country'] ?? null,
             'city' => $data['city'] ?? null,
             'address' => $data['address'] ?? null,
-            'tax_id' => $tax_id ?? null,
+            'tax_id' => $company->tax_id ?: $this->generateTaxId($data['country'] ?? null),
             'responsible_name' => $data['responsible_name'] ?? null,
             'description' => $data['description'] ?? null,
             'logo_path' => $logoPath,
@@ -119,14 +104,6 @@ class CompanyController extends Controller
 
     public function destroy(Company $company): RedirectResponse
     {
-        if ($company->logo_path) {
-            //Storage::disk('public')->delete($company->logo_path);
-        }
-
-        if ($company->invoice_image_path) {
-            //Storage::disk('public')->delete($company->invoice_image_path);
-        }
-
         $company->delete();
 
         return redirect()
@@ -150,7 +127,7 @@ class CompanyController extends Controller
                 $prefix,
                 strtoupper(substr(bin2hex(random_bytes(4)), 0, 8))
             );
-        } while (\App\Models\Company::withTrashed()->where('tax_id', $taxId)->exists());
+        } while (Company::withTrashed()->where('tax_id', $taxId)->exists());
 
         return $taxId;
     }
@@ -159,7 +136,7 @@ class CompanyController extends Controller
     {
         do {
             $code = 'COM-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
-        } while (\App\Models\Company::withTrashed()->where('company_code', $code)->exists());
+        } while (Company::withTrashed()->where('company_code', $code)->exists());
 
         return $code;
     }

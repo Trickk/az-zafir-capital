@@ -7,18 +7,22 @@ use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Gang;
 use App\Models\Invoice;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use Spatie\Browsershot\Browsershot;
 
 class InvoiceController extends Controller
 {
     public function index(): View
     {
-        $invoices = Invoice::latest()->paginate(12);
+        $invoices = Invoice::with(['gang', 'company', 'creator'])
+            ->latest()
+            ->paginate(12);
 
         return view('admin.invoices.index', compact('invoices'));
     }
@@ -36,83 +40,62 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request): RedirectResponse
     {
         $data = $request->validated();
-
         $gang = Gang::with('company')->findOrFail($data['gang_id']);
 
         if (! $gang->company) {
             return back()
-                ->withErrors([
-                    'gang_id' => 'La banda seleccionada no tiene una empresa asociada.',
-                ])
+                ->withErrors(['gang_id' => 'La banda seleccionada no tiene una empresa asociada.'])
                 ->withInput();
         }
 
         $company = $gang->company;
+        $amount = round((float) $data['amount'], 2);
+        $status = $data['status'];
 
-        $gross = (float) $data['gross_amount'];
-        $commissionPercent = (float) $gang->commission_percent;
-        $settlementPercent = round(100 - $commissionPercent, 2);
+        if ($status === 'paid' && (float) $gang->operating_balance < $amount) {
+            return back()
+                ->withErrors(['amount' => 'La banda no tiene saldo operativo suficiente para pagar esta factura.'])
+                ->withInput();
+        }
 
-        $commissionAmount = round($gross * ($commissionPercent / 100), 2);
-        $netAmount = round($gross - $commissionAmount, 2);
+        $invoice = null;
 
-        DB::transaction(function () use ($data, $gang, $company, $gross, $settlementPercent, $commissionPercent, $netAmount, $commissionAmount) {
+        DB::transaction(function () use ($data, $gang, $company, $amount, $status,&$invoice) {
             $invoice = Invoice::create([
                 'invoice_number' => $this->generateInvoiceNumber(),
-                'internal_reference' => $this->generateInternalReference(),
+                'gang_id' => $gang->id,
+                'company_id' => $company->id,
+                'gang_name_snapshot' => $gang->name,
                 'invoice_customer_name' => $data['invoice_customer_name'] ?? null,
                 'invoice_state_id' => $data['invoice_state_id'] ?? null,
-                'public_token' => $this->generatePublicToken(),
-                'gang_name_snapshot' => $gang->name,
                 'company_name_snapshot' => $company->name,
                 'company_legal_name_snapshot' => $company->legal_name,
-                'company_type_snapshot' => $company->type,
-                'company_country_snapshot' => $company->country,
-                'company_city_snapshot' => $company->city,
-                'company_address_snapshot' => $company->address,
                 'company_tax_id_snapshot' => $company->tax_id,
+                'company_responsible_name_snapshot' => $company->responsible_name,
                 'company_logo_path_snapshot' => $company->logo_path,
                 'company_invoice_image_path_snapshot' => $company->invoice_image_path,
-
                 'concept' => $data['concept'],
                 'description' => $data['description'] ?? null,
-
-                'gross_amount' => $gross,
-                'settlement_percent' => $settlementPercent,
-                'commission_percent' => $commissionPercent,
-                'commission_amount' => $commissionAmount,
-                'net_amount' => $netAmount,
-
-                'issued_at' => $data['issued_at'],
-                'due_at' => $data['due_at'] ?? null,
-                'status' => $data['status'],
-
-                'is_generated_image' => false,
+                'amount' => $amount,
+                'status' => $status,
+                'issued_at' => $data['issued_at'] ?? now(),
+                'paid_at' => $status === 'paid' ? now() : null,
+                'cancelled_at' => $status === 'cancelled' ? now() : null,
                 'created_by' => auth()->id(),
-                'notes' => $data['notes'] ?? null,
+                'pdf_path' => null,
+                'image_path' => null,
             ]);
 
-            if ($invoice->status === 'approved') {
-                $invoice->update([
-                    'approved_at' => now(),
-                    'approved_by' => auth()->id(),
-                ]);
-            }
-
             if ($invoice->status === 'paid') {
-                $invoice->update([
-                    'paid_at' => now(),
-                ]);
-
                 $this->applyPaidInvoiceImpact($invoice, $gang);
             }
 
-            if ($invoice->status === 'cancelled') {
-                $invoice->update([
-                    'cancelled_at' => now(),
-                ]);
-            }
+
         });
+
+        $this->generateInvoiceImage($invoice);
+
+
 
         return redirect()
             ->route('admin.invoices.index')
@@ -132,76 +115,57 @@ class InvoiceController extends Controller
     public function update(UpdateInvoiceRequest $request, Invoice $invoice): RedirectResponse
     {
         $data = $request->validated();
-
-        $gang = Gang::with('company')->findOrFail(id: $data['gang_id']);
+        $gang = Gang::with('company')->findOrFail($data['gang_id']);
 
         if (! $gang->company) {
             return back()
-                ->withErrors([
-                    'gang_id' => 'La banda seleccionada no tiene una empresa asociada.',
-                ])
+                ->withErrors(['gang_id' => 'La banda seleccionada no tiene una empresa asociada.'])
                 ->withInput();
         }
 
         $company = $gang->company;
+        $newAmount = round((float) $data['amount'], 2);
+        $newStatus = $data['status'];
 
-        $gross = (float) $data['gross_amount'];
-        $commissionPercent = (float) $gang->commission_percent;
-        $settlementPercent = round(100 - $commissionPercent, 2);
-
-        $commissionAmount = round($gross * ($commissionPercent / 100), 2);
-        $netAmount = round($gross - $commissionAmount, 2);
-
-        DB::transaction(function () use ($data, $invoice, $gang, $company, $gross, $settlementPercent, $commissionPercent, $netAmount, $commissionAmount) {
+        DB::transaction(function () use ($data, $invoice, $gang, $company, $newAmount, $newStatus) {
+            $oldGang = Gang::find($invoice->gang_id);
             $oldStatus = $invoice->status;
-            $oldGrossAmount = (float) $invoice->gross_amount;
-            $oldNetAmount = (float) $invoice->net_amount;
-            $oldCommissionAmount = (float) $invoice->commission_amount;
 
-            if ($oldStatus === 'paid') {
-                $this->revertPaidInvoiceImpact($gang, $oldGrossAmount, $oldNetAmount, $oldCommissionAmount);
+            if ($invoice->status === 'paid' && $oldGang) {
+                $this->revertPaidInvoiceImpact($invoice, $oldGang);
+            }
+
+            if ($invoice->status <> $newStatus && $newStatus === 'paid' && (float) $gang->operating_balance < $newAmount) {
+                abort(422, 'La banda no tiene saldo operativo suficiente para pagar esta factura.');
             }
 
             $invoice->update([
+                'gang_id' => $gang->id,
+                'company_id' => $company->id,
                 'gang_name_snapshot' => $gang->name,
-                'invoice_customer_name' => $data['invoice_customer_name'] ?? null,
-                'invoice_state_id' => $data['invoice_state_id'] ?? null,
-
                 'company_name_snapshot' => $company->name,
                 'company_legal_name_snapshot' => $company->legal_name,
-                'company_type_snapshot' => $company->type,
-                'company_country_snapshot' => $company->country,
-                'company_city_snapshot' => $company->city,
-                'company_address_snapshot' => $company->address,
                 'company_tax_id_snapshot' => $company->tax_id,
+                'company_responsible_name_snapshot' => $company->responsible_name,
                 'company_logo_path_snapshot' => $company->logo_path,
                 'company_invoice_image_path_snapshot' => $company->invoice_image_path,
-
+                'invoice_customer_name' => $data['invoice_customer_name'] ?? null,
+                'invoice_state_id' => $data['invoice_state_id'] ?? null,
                 'concept' => $data['concept'],
                 'description' => $data['description'] ?? null,
-
-                'gross_amount' => $gross,
-                'settlement_percent' => $settlementPercent,
-                'commission_percent' => $commissionPercent,
-                'commission_amount' => $commissionAmount,
-                'net_amount' => $netAmount,
-
-                'issued_at' => $data['issued_at'],
-                'due_at' => $data['due_at'] ?? null,
-                'status' => $data['status'],
-
-                'approved_at' => $data['status'] === 'approved' ? now() : null,
-                'approved_by' => $data['status'] === 'approved' ? auth()->id() : null,
-                'paid_at' => $data['status'] === 'paid' ? now() : null,
-                'cancelled_at' => $data['status'] === 'cancelled' ? now() : null,
-
-                'notes' => $data['notes'] ?? null,
+                'amount' => $newAmount,
+                'status' => $newStatus,
+                'issued_at' => $data['issued_at'] ?? $invoice->issued_at ?? now(),
+                'paid_at' => $newStatus === 'paid' ? now() : null,
+                'cancelled_at' => $newStatus === 'cancelled' ? now() : null,
             ]);
 
-            if ($invoice->status === 'paid') {
+            if ($oldStatus <> $invoice->status && $invoice->status === 'paid') {
                 $this->applyPaidInvoiceImpact($invoice, $gang);
             }
         });
+
+        $this->generateInvoiceImage($invoice->fresh());
 
         return redirect()
             ->route('admin.invoices.index')
@@ -210,16 +174,11 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice): RedirectResponse
     {
-        $gang = Gang::where('name', $invoice->gang_name_snapshot)->first();
+        DB::transaction(function () use ($invoice) {
+            $gang = Gang::find($invoice->gang_id);
 
-        DB::transaction(function () use ($invoice, $gang) {
             if ($invoice->status === 'paid' && $gang) {
-                $this->revertPaidInvoiceImpact(
-                    $gang,
-                    (float) $invoice->gross_amount,
-                    (float) $invoice->net_amount,
-                    (float) $invoice->commission_amount
-                );
+                $this->revertPaidInvoiceImpact($invoice, $gang);
             }
 
             $invoice->delete();
@@ -228,51 +187,6 @@ class InvoiceController extends Controller
         return redirect()
             ->route('admin.invoices.index')
             ->with('success', 'Factura eliminada correctamente.');
-    }
-
-    private function applyPaidInvoiceImpact(Invoice $invoice, Gang $gang): void
-    {
-        $gang->increment('cleaned_total', (float) $invoice->net_amount);
-        $gang->increment('commission_paid_total', (float) $invoice->commission_amount);
-
-        if ((float) $gang->dirty_balance >= (float) $invoice->gross_amount) {
-            $gang->decrement('dirty_balance', (float) $invoice->gross_amount);
-        } else {
-            $gang->update(['dirty_balance' => 0]);
-        }
-    }
-
-    private function revertPaidInvoiceImpact(Gang $gang, float $gross, float $net, float $commission): void
-    {
-        if ((float) $gang->cleaned_total >= $net) {
-            $gang->decrement('cleaned_total', $net);
-        } else {
-            $gang->update(['cleaned_total' => 0]);
-        }
-
-        if ((float) $gang->commission_paid_total >= $commission) {
-            $gang->decrement('commission_paid_total', $commission);
-        } else {
-            $gang->update(['commission_paid_total' => 0]);
-        }
-
-        $gang->increment('dirty_balance', $gross);
-    }
-
-    private function generateInvoiceNumber(): string
-    {
-        $year = now()->format('Y');
-        $last = Invoice::withTrashed()->whereYear('created_at', now()->year)->count() + 1;
-
-        return 'FAC-' . $year . '-' . str_pad((string) $last, 5, '0', STR_PAD_LEFT);
-    }
-
-    private function generateInternalReference(): string
-    {
-        $year = now()->format('Y');
-        $last = Invoice::withTrashed()->whereYear('created_at', now()->year)->count() + 1;
-
-        return 'AZ-' . $year . '-' . str_pad((string) $last, 6, '0', STR_PAD_LEFT);
     }
 
     public function preview(Invoice $invoice): View
@@ -286,96 +200,78 @@ class InvoiceController extends Controller
 
     public function downloadPdf(Invoice $invoice)
     {
-        $pdf = Pdf::loadView('admin.invoices.pdf', [
+       $pdf = Pdf::loadView('admin.invoices.pdf', [
             'invoice' => $invoice,
-            'isPdf' => true,
-            'isPng' => false,
         ])->setPaper('a4', 'portrait');
 
         return $pdf->download($invoice->invoice_number . '.pdf');
     }
 
-public function generatePdf(Invoice $invoice): RedirectResponse
-{
-    $pdf = Pdf::loadView('admin.invoices.pdf', [
-        'invoice' => $invoice,
-        'isPdf' => true,
-        'isPng' => false,
-    ])->setPaper('a4', 'portrait');
+    private function applyPaidInvoiceImpact(Invoice $invoice, Gang $gang): void
+    {
+        $amount = (float) $invoice->amount;
 
-    $fileName = 'invoices/pdf/' . $invoice->invoice_number . '.pdf';
+        if ((float) $gang->operating_balance >= $amount) {
+            $gang->decrement('operating_balance', $amount);
+        } else {
+            abort(422, 'La banda no tiene saldo operativo suficiente para pagar esta factura.');
+        }
+    }
 
-    Storage::disk('public')->put($fileName, $pdf->output());
+    private function revertPaidInvoiceImpact(Invoice $invoice, Gang $gang): void
+    {
+        $gang->increment('operating_balance', (float) $invoice->amount);
+    }
 
-    $invoice->update([
-        'pdf_path' => $fileName,
-    ]);
+    private function generateInvoiceNumber(): string
+    {
+        $year = now()->format('Y');
+        $last = Invoice::withTrashed()
+            ->whereYear('created_at', now()->year)
+            ->count() + 1;
 
-    return redirect()
-        ->route('admin.invoices.index')
-        ->with('success', 'PDF de factura generado correctamente.');
-}
+        return 'FAC-' . $year . '-' . str_pad((string) $last, 5, '0', STR_PAD_LEFT);
+    }
 
-public function publicRender(string $token): View
-{
-    $invoice = Invoice::where('public_token', $token)->firstOrFail();
+    private function generateInvoiceImage(Invoice $invoice): void
+    {
+        $path = 'invoices/images/' . $invoice->invoice_number . '.png';
+        $fullPath = storage_path('app/public/' . $path);
 
-    return view('admin.invoices.public-render', [
-        'invoice' => $invoice,
-        'isPdf' => false,
-        'isPng' => true,
-    ]);
-}
+        $directory = dirname($fullPath);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
 
-public function generatePng(Invoice $invoice): RedirectResponse
-{
-    if (! $invoice->public_token) {
+        $url = route('invoices.image.view', $invoice);
+
+        Browsershot::url($url)
+            ->setNodeBinary('/usr/bin/node')
+            ->setNpmBinary('/usr/bin/npm')
+            ->setChromePath('/usr/bin/google-chrome')
+            ->setOption('args', ['--no-sandbox', '--disable-setuid-sandbox'])
+            ->timeout(60) // segundos
+            ->windowSize(1200, 1700)
+            ->deviceScaleFactor(1)
+            ->waitUntilNetworkIdle()
+            ->save($fullPath);
+
         $invoice->update([
-            'public_token' => $this->generatePublicToken(),
+            'image_path' => $path,
         ]);
-
-        $invoice->refresh();
     }
 
-    $url = route('invoices.public-render', $invoice->public_token);
-
-    $fileName = 'invoices/png/' . $invoice->invoice_number . '.png';
-    $fullPath = storage_path('app/public/' . $fileName);
-
-    if (! is_dir(dirname($fullPath))) {
-        mkdir(dirname($fullPath), 0775, true);
+    public function imageView(Invoice $invoice): View
+    {
+        return view('admin.invoices.image', compact('invoice'));
     }
 
-    Browsershot::url($url)
-        ->windowSize(1400, 1800)
-        ->deviceScaleFactor(2)
-        ->waitUntilNetworkIdle()
-        ->setDelay(500)
-        ->showBackground()
-        ->noSandbox()
-        ->save($fullPath);
+    public function showImage(Invoice $invoice)
+    {
+        if (!$invoice->image_path) {
+            abort(404, 'La imagen de la factura no existe todavía.');
+        }
 
-    $publicUrl = asset('storage/' . $fileName);
-
-    $invoice->update([
-        'png_path' => $fileName,
-        'public_image_url' => $publicUrl,
-        'is_generated_image' => true,
-        'public_image_path' => $fileName,
-    ]);
-
-    return redirect()
-        ->route('admin.invoices.index')
-        ->with('success', 'PNG de factura generado correctamente.');
-}
-
-private function generatePublicToken(): string
-{
-    do {
-        $token = \Illuminate\Support\Str::random(40);
-    } while (\App\Models\Invoice::where('public_token', $token)->exists());
-
-    return $token;
-}
-
+        return redirect(asset('storage/' . $invoice->image_path));
+    }
 }

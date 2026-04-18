@@ -11,24 +11,23 @@ return new class extends Migration
         Schema::create('gangs', function (Blueprint $table) {
             $table->id();
 
+            $table->string('gang_code', 50)->unique();
+
             $table->foreignId('company_id')
                 ->nullable()
                 ->constrained('companies')
                 ->nullOnDelete();
 
-            $table->string('name', 150)->unique();
-            $table->string('slug', 160)->unique();
-            $table->text('description')->nullable();
+            $table->string('name', 150);
+            $table->string('slug', 160)->nullable();
 
+            $table->text('description')->nullable();
             $table->string('boss_name', 150)->nullable();
             $table->string('contact_discord', 150)->nullable();
 
-            $table->decimal('settlement_percent', 5, 2)->default(80.00);
-
-            $table->decimal('dirty_balance', 15, 2)->default(0);
-            $table->decimal('dirty_received_total', 15, 2)->default(0);
-            $table->decimal('cleaned_total', 15, 2)->default(0);
-            $table->decimal('commission_paid_total', 15, 2)->default(0);
+            $table->decimal('commission_percent', 5, 2)->default(10.00);
+            $table->decimal('matrix_percent', 5, 2)->default(10.00);
+            $table->decimal('operating_balance', 15, 2)->default(0);
 
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
 
@@ -36,8 +35,8 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('company_id');
-            $table->index('slug');
             $table->index('status');
+            $table->index('name');
         });
     }
 

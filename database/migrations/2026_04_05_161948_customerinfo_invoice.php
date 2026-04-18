@@ -6,21 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('png_path')->nullable()->after('pdf_path');
-            $table->string('public_image_url')->nullable()->after('png_path');
+            $table->string('invoice_customer_name', 150)->nullable()->after('company_responsible_name_snapshot');
+            $table->string('invoice_state_id', 100)->nullable()->after('invoice_customer_name');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            $table->dropColumn([
-                'png_path',
-                'public_image_url',
-            ]);
-        });
+        //
     }
 };

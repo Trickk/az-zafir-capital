@@ -3,31 +3,39 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CashDelivery extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'gang_id',
         'company_id',
         'delivery_number',
         'amount',
+
+        'matrix_percent',
+        'commission_percent',
+        'operating_percent',
+
+        'matrix_amount',
+        'commission_amount',
+        'operating_amount',
+
         'status',
-        'delivered_by',
-        'received_by',
-        'delivered_at',
-        'received_at',
         'created_by',
         'notes',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'delivered_at' => 'datetime',
-        'received_at' => 'datetime',
+        'matrix_percent' => 'decimal:2',
+        'commission_percent' => 'decimal:2',
+        'operating_percent' => 'decimal:2',
+        'matrix_amount' => 'decimal:2',
+        'commission_amount' => 'decimal:2',
+        'operating_amount' => 'decimal:2',
     ];
+
+    // Relaciones
 
     public function gang()
     {

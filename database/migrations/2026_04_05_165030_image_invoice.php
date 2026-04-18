@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::table('companies', function (Blueprint $table) {
-            $table->unique('tax_id');
+       Schema::table('invoices', function (Blueprint $table) {
+            $table->string('company_logo_path_snapshot', 255)->nullable()->after('company_responsible_name_snapshot');
+            $table->string('company_invoice_image_path_snapshot', 255)->nullable()->after('company_logo_path_snapshot');
         });
     }
 
@@ -21,8 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('companies', function (Blueprint $table) {
-            //
-        });
+        //
     }
 };

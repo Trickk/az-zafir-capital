@@ -14,24 +14,30 @@ class UpdateGangRequest extends FormRequest
 
     public function rules(): array
     {
-        $gangId = $this->route('gang')->id;
-
         return [
+            'company_id' => ['nullable', 'exists:companies,id'],
+            'name' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string'],
             'boss_name' => ['nullable', 'string', 'max:150'],
             'contact_discord' => ['nullable', 'string', 'max:150'],
-            'commission_percent' => ['required', 'numeric', 'min:0', 'max:100'],
-            'status' => ['required', 'in:active,inactive,suspended'],
+            'commission_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'matrix_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'status' => ['required', Rule::in(['active', 'inactive', 'suspended'])],
         ];
     }
 
-    public function messages(): array
+    public function withValidator($validator): void
     {
-        return [
-            'name.unique' => 'Ya existe una banda con ese nombre.',
-            'commission_percent.required' => 'Debes indicar el porcentaje de comisión.',
-            'commission_percent.numeric' => 'El porcentaje de comisión debe ser numérico.',
-            'status.required' => 'Debes seleccionar un estado.',
-        ];
+        $validator->after(function ($validator) {
+            $commission = (float) ($this->input('commission_percent', 10));
+            $matrix = (float) ($this->input('matrix_percent', 10));
+
+            if (($commission + $matrix) > 100) {
+                $validator->errors()->add(
+                    'matrix_percent',
+                    'La suma de porcentaje gestor y porcentaje Matrix no puede superar el 100%.'
+                );
+            }
+        });
     }
 }

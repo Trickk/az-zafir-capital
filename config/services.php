@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'fivem' => [
+        'token' => env('FIVEM_API_TOKEN'),
+    ],
+
 ];

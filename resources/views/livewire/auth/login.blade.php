@@ -56,6 +56,7 @@
                 <flux:checkbox name="remember" :label="__('Remember me')" :checked="old('remember')" />
 
                 <div class="flex items-center justify-end">
+
                     <flux:button
                         variant="primary"
                         type="submit"
@@ -67,14 +68,14 @@
                 </div>
             </form>
 
-            @if (Route::has('register'))
+            {{-- @if (Route::has('register'))
                 <div class="mt-8 space-x-1 text-sm text-center az-muted rtl:space-x-reverse">
                     <span>{{ __('Don\'t have an account?') }}</span>
                     <flux:link :href="route('register')" wire:navigate class="!text-[var(--az-gold)] hover:!text-[var(--az-gold-light)]">
                         {{ __('Sign up') }}
                     </flux:link>
                 </div>
-            @endif
+            @endif --}}
         </div>
     </div>
 </x-layouts::auth>

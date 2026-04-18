@@ -39,7 +39,7 @@ contact@alzafircapital.com
 <div class="az-card p-6">
 
 <form class="space-y-4">
-
+@csrf
 <input type="text" placeholder="Name"
 class="w-full p-3 bg-black border border-gray-700 rounded">
 

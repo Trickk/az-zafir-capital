@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
 
+            $table->string('company_code', 50)->unique();
             $table->string('name', 180)->unique();
             $table->string('slug', 190)->unique();
             $table->string('legal_name', 220)->nullable();
@@ -24,18 +25,17 @@ return new class extends Migration
                 'security',
                 'technology',
                 'trading',
-                'other',
-            ])->default('other');
+            ])->default('investment');
 
-            $table->string('country', 120)->nullable();
+            $table->string('country', 100)->nullable();
             $table->string('city', 120)->nullable();
-            $table->string('address')->nullable();
-            $table->string('tax_id', 100)->nullable();
-
+            $table->string('address', 255)->nullable();
+            $table->string('tax_id', 100)->nullable()->unique();
+            $table->string('responsible_name', 150)->nullable();
             $table->text('description')->nullable();
 
-            $table->string('logo_path')->nullable();
-            $table->string('invoice_image_path')->nullable();
+            $table->string('logo_path', 255)->nullable();
+            $table->string('invoice_image_path', 255)->nullable();
 
             $table->enum('status', ['active', 'inactive'])->default('active');
 
@@ -44,6 +44,7 @@ return new class extends Migration
 
             $table->index('slug');
             $table->index('status');
+            $table->index('type');
         });
     }
 

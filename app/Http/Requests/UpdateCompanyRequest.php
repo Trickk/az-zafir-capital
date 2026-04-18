@@ -14,38 +14,32 @@ class UpdateCompanyRequest extends FormRequest
 
     public function rules(): array
     {
-        $companyId = $this->route('company')->id;
+        $companyId = $this->route('company')?->id ?? $this->route('company');
 
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:180',
-                Rule::unique('companies', 'name')->ignore($companyId),
-            ],
+            'name' => ['required', 'string', 'max:180', Rule::unique('companies', 'name')->ignore($companyId)],
             'legal_name' => ['nullable', 'string', 'max:220'],
-            'type' => ['required', 'in:cultural,logistics,hospitality,investment,entertainment,security,technology,trading,other'],
-            'country' => ['nullable', 'string', 'max:120'],
+            'type' => [
+                'required',
+                Rule::in([
+                    'cultural',
+                    'logistics',
+                    'hospitality',
+                    'investment',
+                    'entertainment',
+                    'security',
+                    'technology',
+                    'trading',
+                ]),
+            ],
+            'country' => ['nullable', 'string', 'max:100'],
             'city' => ['nullable', 'string', 'max:120'],
             'address' => ['nullable', 'string', 'max:255'],
-            'tax_id' => ['nullable', 'string', 'max:100'],
-            'description' => ['nullable', 'string'],
-            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'invoice_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'status' => ['required', 'in:active,inactive'],
             'responsible_name' => ['nullable', 'string', 'max:150'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'name.required' => 'El nombre es obligatorio.',
-            'name.unique' => 'Ya existe una empresa con ese nombre.',
-            'type.required' => 'Debes seleccionar un tipo.',
-            'status.required' => 'Debes seleccionar un estado.',
-            'logo.image' => 'El logo debe ser una imagen válida.',
-            'invoice_image.image' => 'La imagen de factura debe ser una imagen válida.',
+            'description' => ['nullable', 'string'],
+            'logo' => ['nullable', 'image', 'max:5120'],
+            'invoice_image' => ['nullable', 'image', 'max:5120'],
+            'status' => ['required', Rule::in(['active', 'inactive'])],
         ];
     }
 }

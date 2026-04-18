@@ -7,6 +7,8 @@ use App\Http\Requests\StoreCashDeliveryRequest;
 use App\Http\Requests\UpdateCashDeliveryRequest;
 use App\Models\CashDelivery;
 use App\Models\Gang;
+use App\Models\MatrixFund;
+use App\Models\MatrixFundMovement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -15,7 +17,7 @@ class CashDeliveryController extends Controller
 {
     public function index(): View
     {
-        $cashDeliveries = CashDelivery::with(['gang', 'company'])
+        $cashDeliveries = CashDelivery::with(['gang', 'company', 'creator'])
             ->latest()
             ->paginate(12);
 
@@ -35,35 +37,66 @@ class CashDeliveryController extends Controller
     public function store(StoreCashDeliveryRequest $request): RedirectResponse
     {
         $data = $request->validated();
-
-        $gang = Gang::with('company')->findOrFail($data['gang_id']);
+        $gang = Gang::with(['company', 'matrixFund'])->findOrFail($data['gang_id']);
 
         if (! $gang->company) {
             return back()
-                ->withErrors([
-                    'gang_id' => 'La banda seleccionada no tiene una empresa asociada.',
-                ])
+                ->withErrors(['gang_id' => 'La banda seleccionada no tiene una empresa asociada.'])
                 ->withInput();
         }
 
         DB::transaction(function () use ($data, $gang) {
+            $amount = round((float) $data['amount'], 2);
+            $matrixPercent = round((float) ($gang->matrix_percent ?? 10), 2);
+            $commissionPercent = round((float) ($gang->commission_percent ?? 10), 2);
+            $operatingPercent = round(100 - $matrixPercent - $commissionPercent, 2);
+
+            if ($operatingPercent < 0) {
+                abort(422, 'La suma de porcentajes de Matrix y gestor no puede ser superior a 100.');
+            }
+
+            $matrixAmount = round($amount * ($matrixPercent / 100), 2);
+            $commissionAmount = round($amount * ($commissionPercent / 100), 2);
+            $operatingAmount = round($amount - $matrixAmount - $commissionAmount, 2);
+
             $delivery = CashDelivery::create([
                 'gang_id' => $gang->id,
                 'company_id' => $gang->company->id,
                 'delivery_number' => $this->generateDeliveryNumber(),
-                'amount' => $data['amount'],
+                'amount' => $amount,
+                'matrix_percent' => $matrixPercent,
+                'commission_percent' => $commissionPercent,
+                'operating_percent' => $operatingPercent,
+                'matrix_amount' => $matrixAmount,
+                'commission_amount' => $commissionAmount,
+                'operating_amount' => $operatingAmount,
                 'status' => $data['status'],
-                'delivered_by' => $data['delivered_by'] ?? null,
-                'received_by' => $data['received_by'] ?? null,
-                'delivered_at' => $data['delivered_at'] ?? now(),
-                'received_at' => $data['received_at'] ?? now(),
                 'created_by' => auth()->id(),
                 'notes' => $data['notes'] ?? null,
             ]);
 
             if (in_array($delivery->status, ['received', 'verified'], true)) {
-                $gang->increment('dirty_balance', (float) $delivery->amount);
-                $gang->increment('dirty_received_total', (float) $delivery->amount);
+                $gang->increment('operating_balance', $operatingAmount);
+
+                $matrixFund = $gang->matrixFund ?: MatrixFund::create([
+                    'gang_id' => $gang->id,
+                    'balance' => 0,
+                    'total_in' => 0,
+                    'total_out' => 0,
+                ]);
+
+                $matrixFund->increment('balance', $matrixAmount);
+                $matrixFund->increment('total_in', $matrixAmount);
+
+                MatrixFundMovement::create([
+                    'gang_id' => $gang->id,
+                    'matrix_fund_id' => $matrixFund->id,
+                    'type' => 'in',
+                    'amount' => $matrixAmount,
+                    'concept' => 'Asignación automática por entrega ' . $delivery->delivery_number,
+                    'notes' => $data['notes'] ?? null,
+                    'created_by' => auth()->id(),
+                ]);
             }
         });
 
@@ -85,51 +118,70 @@ class CashDeliveryController extends Controller
     public function update(UpdateCashDeliveryRequest $request, CashDelivery $cashDelivery): RedirectResponse
     {
         $data = $request->validated();
+        $newGang = Gang::with(['company', 'matrixFund'])->findOrFail($data['gang_id']);
 
-        $gang = Gang::with('company')->findOrFail($data['gang_id']);
-
-        if (! $gang->company) {
+        if (! $newGang->company) {
             return back()
-                ->withErrors([
-                    'gang_id' => 'La banda seleccionada no tiene una empresa asociada.',
-                ])
+                ->withErrors(['gang_id' => 'La banda seleccionada no tiene una empresa asociada.'])
                 ->withInput();
         }
 
-        DB::transaction(function () use ($data, $cashDelivery, $gang) {
-            $oldAmount = (float) $cashDelivery->amount;
-            $oldStatus = $cashDelivery->status;
-            $oldGang = Gang::find($cashDelivery->gang_id);
+        DB::transaction(function () use ($data, $cashDelivery, $newGang) {
+            $oldGang = Gang::with('matrixFund')->find($cashDelivery->gang_id);
 
-            if ($oldGang && in_array($oldStatus, ['received', 'verified'], true)) {
-                if ((float) $oldGang->dirty_balance >= $oldAmount) {
-                    $oldGang->decrement('dirty_balance', $oldAmount);
-                } else {
-                    $oldGang->update(['dirty_balance' => 0]);
-                }
-
-                if ((float) $oldGang->dirty_received_total >= $oldAmount) {
-                    $oldGang->decrement('dirty_received_total', $oldAmount);
-                } else {
-                    $oldGang->update(['dirty_received_total' => 0]);
-                }
+            if ($oldGang && in_array($cashDelivery->status, ['received', 'verified'], true)) {
+                $this->revertDeliveryImpact($cashDelivery, $oldGang);
             }
 
+            $amount = round((float) $data['amount'], 2);
+            $matrixPercent = round((float) ($newGang->matrix_percent ?? 10), 2);
+            $commissionPercent = round((float) ($newGang->commission_percent ?? 10), 2);
+            $operatingPercent = round(100 - $matrixPercent - $commissionPercent, 2);
+
+            if ($operatingPercent < 0) {
+                abort(422, 'La suma de porcentajes de Matrix y gestor no puede ser superior a 100.');
+            }
+
+            $matrixAmount = round($amount * ($matrixPercent / 100), 2);
+            $commissionAmount = round($amount * ($commissionPercent / 100), 2);
+            $operatingAmount = round($amount - $matrixAmount - $commissionAmount, 2);
+
             $cashDelivery->update([
-                'gang_id' => $gang->id,
-                'company_id' => $gang->company->id,
-                'amount' => $data['amount'],
+                'gang_id' => $newGang->id,
+                'company_id' => $newGang->company->id,
+                'amount' => $amount,
+                'matrix_percent' => $matrixPercent,
+                'commission_percent' => $commissionPercent,
+                'operating_percent' => $operatingPercent,
+                'matrix_amount' => $matrixAmount,
+                'commission_amount' => $commissionAmount,
+                'operating_amount' => $operatingAmount,
                 'status' => $data['status'],
-                'delivered_by' => $data['delivered_by'] ?? null,
-                'received_by' => $data['received_by'] ?? null,
-                'delivered_at' => $data['delivered_at'] ?? null,
-                'received_at' => $data['received_at'] ?? null,
                 'notes' => $data['notes'] ?? null,
             ]);
 
             if (in_array($cashDelivery->status, ['received', 'verified'], true)) {
-                $gang->increment('dirty_balance', (float) $cashDelivery->amount);
-                $gang->increment('dirty_received_total', (float) $cashDelivery->amount);
+                $newGang->increment('operating_balance', $operatingAmount);
+
+                $matrixFund = $newGang->matrixFund ?: MatrixFund::create([
+                    'gang_id' => $newGang->id,
+                    'balance' => 0,
+                    'total_in' => 0,
+                    'total_out' => 0,
+                ]);
+
+                $matrixFund->increment('balance', $matrixAmount);
+                $matrixFund->increment('total_in', $matrixAmount);
+
+                MatrixFundMovement::create([
+                    'gang_id' => $newGang->id,
+                    'matrix_fund_id' => $matrixFund->id,
+                    'type' => 'in',
+                    'amount' => $matrixAmount,
+                    'concept' => 'Reasignación automática por edición de entrega ' . $cashDelivery->delivery_number,
+                    'notes' => $data['notes'] ?? null,
+                    'created_by' => auth()->id(),
+                ]);
             }
         });
 
@@ -141,22 +193,10 @@ class CashDeliveryController extends Controller
     public function destroy(CashDelivery $cashDelivery): RedirectResponse
     {
         DB::transaction(function () use ($cashDelivery) {
-            $gang = Gang::find($cashDelivery->gang_id);
+            $gang = Gang::with('matrixFund')->find($cashDelivery->gang_id);
 
             if ($gang && in_array($cashDelivery->status, ['received', 'verified'], true)) {
-                $amount = (float) $cashDelivery->amount;
-
-                if ((float) $gang->dirty_balance >= $amount) {
-                    $gang->decrement('dirty_balance', $amount);
-                } else {
-                    $gang->update(['dirty_balance' => 0]);
-                }
-
-                if ((float) $gang->dirty_received_total >= $amount) {
-                    $gang->decrement('dirty_received_total', $amount);
-                } else {
-                    $gang->update(['dirty_received_total' => 0]);
-                }
+                $this->revertDeliveryImpact($cashDelivery, $gang);
             }
 
             $cashDelivery->delete();
@@ -167,12 +207,47 @@ class CashDeliveryController extends Controller
             ->with('success', 'Entrega de dinero eliminada correctamente.');
     }
 
+    private function revertDeliveryImpact(CashDelivery $cashDelivery, Gang $gang): void
+    {
+        $operatingAmount = (float) $cashDelivery->operating_amount;
+        $matrixAmount = (float) $cashDelivery->matrix_amount;
+
+        if ((float) $gang->operating_balance >= $operatingAmount) {
+            $gang->decrement('operating_balance', $operatingAmount);
+        } else {
+            $gang->update(['operating_balance' => 0]);
+        }
+
+        $matrixFund = $gang->matrixFund;
+        if ($matrixFund) {
+            if ((float) $matrixFund->balance >= $matrixAmount) {
+                $matrixFund->decrement('balance', $matrixAmount);
+            } else {
+                $matrixFund->update(['balance' => 0]);
+            }
+
+            if ((float) $matrixFund->total_in >= $matrixAmount) {
+                $matrixFund->decrement('total_in', $matrixAmount);
+            } else {
+                $matrixFund->update(['total_in' => 0]);
+            }
+
+            MatrixFundMovement::create([
+                'gang_id' => $gang->id,
+                'matrix_fund_id' => $matrixFund->id,
+                'type' => 'adjustment',
+                'amount' => $matrixAmount,
+                'concept' => 'Reversión de entrega ' . $cashDelivery->delivery_number,
+                'notes' => 'Ajuste automático por edición o eliminación de entrega.',
+                'created_by' => auth()->id(),
+            ]);
+        }
+    }
+
     private function generateDeliveryNumber(): string
     {
         $year = now()->format('Y');
-        $last = CashDelivery::withTrashed()
-            ->whereYear('created_at', now()->year)
-            ->count() + 1;
+        $last = CashDelivery::whereYear('created_at', now()->year)->count() + 1;
 
         return 'ENT-' . $year . '-' . str_pad((string) $last, 5, '0', STR_PAD_LEFT);
     }

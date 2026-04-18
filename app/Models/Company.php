@@ -31,8 +31,8 @@ class Company extends Model
         return $this->hasMany(Gang::class);
     }
 
-    public function cashDeliveries()
+    public function invoices()
     {
-        return $this->hasMany(CashDelivery::class);
+        return $this->hasMany(Invoice::class);
     }
 }

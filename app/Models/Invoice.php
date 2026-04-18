@@ -11,77 +11,58 @@ class Invoice extends Model
 
     protected $fillable = [
         'invoice_number',
-        'internal_reference',
-        'invoice_customer_name',
-        'invoice_state_id',
 
-        'public_token',
+        'gang_id',
+        'company_id',
 
         'gang_name_snapshot',
-        'gang_code_snapshot',
-
         'company_name_snapshot',
-        'company_code_snapshot',
         'company_legal_name_snapshot',
-        'company_type_snapshot',
-        'company_country_snapshot',
-        'company_city_snapshot',
-        'company_address_snapshot',
         'company_tax_id_snapshot',
+        'company_responsible_name_snapshot',
+
         'company_logo_path_snapshot',
         'company_invoice_image_path_snapshot',
 
+        'invoice_customer_name',
+        'invoice_state_id',
+
         'concept',
         'description',
-
-        'gross_amount',
-        'settlement_percent',
-        'commission_percent',
-        'commission_amount',
-        'net_amount',
-
-        'issued_at',
-        'due_at',
+        'amount',
 
         'status',
-
-        'is_generated_image',
-        'public_image_path',
-        'pdf_path',
-
-        'png_path',
-        'public_image_url',
-
-        'created_by',
-        'approved_by',
-        'approved_at',
+        'issued_at',
         'paid_at',
         'cancelled_at',
 
-        'notes',
+        'created_by',
+
+        'pdf_path',
+        'image_path',
     ];
 
     protected $casts = [
-        'gross_amount' => 'decimal:2',
-        'settlement_percent' => 'decimal:2',
-        'commission_percent' => 'decimal:2',
-        'commission_amount' => 'decimal:2',
-        'net_amount' => 'decimal:2',
-        'issued_at' => 'date',
-        'due_at' => 'date',
-        'approved_at' => 'datetime',
+        'amount' => 'decimal:2',
+        'issued_at' => 'datetime',
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
-        'is_generated_image' => 'boolean',
     ];
+
+    // Relaciones
+
+    public function gang()
+    {
+        return $this->belongsTo(Gang::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function approver()
-    {
-        return $this->belongsTo(User::class, 'approved_by');
     }
 }

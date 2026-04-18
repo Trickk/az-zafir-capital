@@ -25,25 +25,34 @@ return new class extends Migration
 
             $table->decimal('amount', 15, 2);
 
-            $table->enum('status', ['pending', 'received', 'verified', 'cancelled'])
-                ->default('received');
+            $table->decimal('matrix_percent', 5, 2)->default(10.00);
+            $table->decimal('commission_percent', 5, 2)->default(10.00);
+            $table->decimal('operating_percent', 5, 2)->default(80.00);
 
-            $table->string('delivered_by', 150)->nullable();
-            $table->string('received_by', 150)->nullable();
+            $table->decimal('matrix_amount', 15, 2)->default(0);
+            $table->decimal('commission_amount', 15, 2)->default(0);
+            $table->decimal('operating_amount', 15, 2)->default(0);
 
-            $table->timestamp('delivered_at')->nullable();
-            $table->timestamp('received_at')->nullable();
+            $table->enum('status', [
+                'pending',
+                'received',
+                'verified',
+                'cancelled',
+            ])->default('received');
 
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
 
             $table->text('notes')->nullable();
 
             $table->timestamps();
-            $table->softDeletes();
 
             $table->index('gang_id');
             $table->index('company_id');
             $table->index('status');
+            $table->index('created_at');
         });
     }
 
